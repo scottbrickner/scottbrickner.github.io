@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scott Brickner — Nursing Education Resources</title>
+<meta name="description" content="Interactive teaching tools and reference material for critical care nursing education.">
+<style>
+  :root{
+    --ground:#FCFBFB; --surface:#FFFFFF; --panel:#F7F9FA;
+    --ink:#1A1618; --ink-2:#4A4145; --ink-3:#7B6F73;
+    --hair:#E2E6E8; --hair-2:#C9D1D4;
+    --accent:#15566B; --accent-soft:#E9F1F4; --on-accent:#FFFFFF;
+  }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+    --ground:#121416; --surface:#1A1D20; --panel:#1E2225;
+    --ink:#F0EEEF; --ink-2:#C2BABD; --ink-3:#938A8D;
+    --hair:#2C3134; --hair-2:#3E4548;
+    --accent:#6FB8D0; --accent-soft:#122630; --on-accent:#0C1C23;
+  }}
+  :root[data-theme="dark"]{
+    --ground:#121416; --surface:#1A1D20; --panel:#1E2225;
+    --ink:#F0EEEF; --ink-2:#C2BABD; --ink-3:#938A8D;
+    --hair:#2C3134; --hair-2:#3E4548;
+    --accent:#6FB8D0; --accent-soft:#122630; --on-accent:#0C1C23;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--ground);color:var(--ink);
+    font-family:"Segoe UI Variable Text","Segoe UI",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;
+    font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+  .topbar{height:4px;background:var(--accent);}
+  .wrap{max-width:880px;margin:0 auto;padding:0 20px 72px;}
+
+  header{padding:40px 0 10px;border-bottom:1px solid var(--hair);}
+  .eyebrow{font-family:ui-monospace,"Cascadia Mono","Consolas","SF Mono",Menlo,monospace;
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px;}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:2.1rem;line-height:1.1;
+     font-weight:700;margin:0;letter-spacing:-.015em;}
+  .tagline{color:var(--ink-2);margin:12px 0 26px;max-width:58ch;font-size:16.5px;}
+
+  h2{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;
+     color:var(--ink-3);margin:38px 0 14px;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px;}
+  /* ---- ARTIFACT CARD · copy this whole <a> block to add one ---- */
+  a.card{display:flex;flex-direction:column;gap:9px;text-decoration:none;color:inherit;
+    background:var(--surface);border:1px solid var(--hair);border-top:3px solid var(--accent);
+    padding:17px 18px 18px;transition:background .12s ease;}
+  a.card:hover{background:var(--panel);}
+  a.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .card .tag{font-family:ui-monospace,"Cascadia Mono","Consolas","SF Mono",Menlo,monospace;
+    font-size:11px;letter-spacing:.07em;font-weight:600;color:var(--accent);text-transform:uppercase;}
+  .card .t{font-weight:700;font-size:16.5px;line-height:1.28;}
+  .card .d{font-size:14px;line-height:1.45;color:var(--ink-2);}
+  .card .m{font-size:12px;color:var(--ink-3);margin-top:auto;padding-top:7px;}
+
+  footer{margin-top:52px;padding-top:18px;border-top:1px solid var(--hair);
+    font-size:12.5px;color:var(--ink-3);line-height:1.65;}
+  footer a{color:var(--accent);}
+  footer .fine{margin-top:12px;font-size:11.5px;}
+</style>
+</head><body>
+<div class="topbar"></div>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Critical Care Nursing Education</p>
+    <h1>Scott Brickner, MSN, RN, CCRN</h1>
+  </header>
+  <p class="tagline">Interactive teaching tools and reference material for critical care
+    nursing education. Everything here runs in the browser — nothing to install, nothing to sign in to.</p>
+
+  <h2>Interactive tools</h2>
+  <div class="grid">
+
+    <!-- ===== ARTIFACT CARD — copy from here ===== -->
+    <a class="card" href="ecg-elements-rn/">
+      <span class="tag">ECG</span>
+      <span class="t">ECG Element Library — Registered Nurse</span>
+      <span class="d">Fourteen short interactive elements: rhythm identification, timed
+        recognition drills, digital calipers, ACLS intervention sequences and escalation
+        decisions. Take one or take all of them, in any order.</span>
+      <span class="m">Updated November 2026</span>
+    </a>
+    <!-- ===== to here ===== -->
+
+  </div>
+
+  <footer>
+    © 2026 Scott Brickner, MSN, RN, CCRN. All rights reserved.
+    Rhythm tracings © ECGSimulator.Net — see <a href="credits.html">credits</a>.
+    <div class="fine">Personal site. Materials and views are my own and are not published on
+      behalf of any employer. Educational use only — nothing here is clinical advice or a
+      substitute for your own institution's policies and protocols.</div>
+  </footer>
+
+</div></body></html>
