@@ -1,0 +1,1413 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Microlearning Example — AF with RVR</title>
+<meta name="description" content="Live, interactive microlearning elements for new-onset atrial fibrillation with RVR — the worked example from the TL;DR webinar, built as real units.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ECG Element Library — Swiss Grid Brand System · NEUTRAL mode (per STYLEGUIDE.md §1) */
+:root{
+  --primary:#147D83; --ink-on:#FFFFFF; --secondary:#A66F00;
+  --ink:#17212B; --body:#17212B; --dim:#66727F; --faint:#9AA3AC;
+  --hairline:#D9DEE3; --rule:#C3BDB2; --danger:#B23A3A; --bg:#FFFFFF;
+  --slate:#44546A; --blue:#2F6F9F; --violet:#67558C;
+  --ok:#2D7D61; --amber:#A66F00; --info:#2F6F9F; --red:#B23A3A;
+  --t-danger:#F6E4E2; --t-caution:#FFF1D6; --t-neutral:#E4E0D9; --t-good:#F1F7F7;
+  --page:#FBFAF8; --surface:#FFFFFF;
+  --sans:"Source Sans 3",system-ui,-apple-system,Segoe UI,Arial,sans-serif;
+  --accent:"Montserrat",var(--sans);
+  --r:2px;
+  --mx:clamp(16px,5vw,28px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);color:var(--body);background:var(--page);line-height:1.45;font-size:16px;
+  -webkit-font-smoothing:antialiased}
+.topbar{height:5px;background:var(--primary)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 var(--mx)}
+h1,h2,h3{text-wrap:balance}
+.eyebrow{font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.eyebrow.t{color:var(--primary)}
+.num{font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+a{color:var(--primary)}
+
+/* header */
+header.hd{padding:34px 0 26px;border-bottom:1px solid var(--hairline)}
+.hd .row{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
+.hd h1{font-family:var(--accent);font-weight:700;font-size:clamp(1.9rem,5vw,2.7rem);line-height:1.02;
+  letter-spacing:-.01em;color:var(--ink);margin:10px 0 0}
+.hd .lede{color:var(--slate);font-size:clamp(15px,2.4vw,17px);margin-top:12px;max-width:62ch}
+.idtag{font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--primary);
+  border:1px solid var(--primary);padding:5px 10px;white-space:nowrap;border-radius:var(--r)}
+.note{margin-top:16px;font-size:12.5px;color:var(--dim);border-left:3px solid var(--rule);padding:3px 0 3px 12px;max-width:72ch}
+.note b{color:var(--slate);font-weight:600}
+
+section{padding:34px 0;border-bottom:1px solid var(--hairline)}
+section h2{font-family:var(--accent);font-weight:600;font-size:clamp(1.25rem,3.4vw,1.6rem);color:var(--ink);
+  letter-spacing:-.01em;margin:8px 0 0}
+section .sub{color:var(--slate);font-size:14.5px;margin-top:8px;max-width:66ch}
+
+/* arc */
+.arc{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:22px}
+.arc .step{background:var(--surface);border:1px solid var(--hairline);border-top:4px solid var(--primary);
+  border-radius:0 0 var(--r) var(--r);padding:16px 16px 18px;position:relative}
+.arc .step.red{border-top-color:var(--rule)}
+.arc .step .ix{font-weight:700;font-size:12px;letter-spacing:.08em;color:var(--primary)}
+.arc .step.red .ix{color:var(--dim)}
+.arc .step h3{font-family:var(--accent);font-weight:600;font-size:16px;color:var(--ink);margin:7px 0 6px}
+.arc .step p{font-size:13px;color:var(--slate);line-height:1.45}
+.arc .step .chip{display:inline-block;margin-top:10px;font-size:11px;font-weight:700;letter-spacing:.04em;
+  padding:3px 8px;border-radius:999px;background:var(--t-neutral);color:var(--slate)}
+.arc .step.red .chip{background:var(--t-caution);color:var(--amber)}
+.arc .conn{display:none}
+@media(max-width:720px){.arc{grid-template-columns:1fr}}
+
+/* group label */
+.grp{display:flex;align-items:center;gap:12px;margin:26px 0 12px}
+.grp .gl{font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--slate);white-space:nowrap}
+.grp .gr{height:1px;background:var(--hairline);flex:1}
+
+/* unit grid */
+.units{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:12px}
+.unit{text-align:left;width:100%;background:var(--surface);border:1px solid var(--hairline);
+  border-radius:var(--r);padding:14px 15px;cursor:pointer;font:inherit;color:inherit;
+  display:flex;flex-direction:column;gap:9px;transition:border-color .12s,box-shadow .12s;position:relative;overflow:hidden}
+.unit::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--primary)}
+.unit.jobaid::before{background:var(--blue)}
+.unit:hover{border-color:var(--primary);box-shadow:0 1px 0 var(--hairline)}
+.unit:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.unit .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.unit .u-n{font-weight:700;font-size:11px;letter-spacing:.07em;color:var(--dim)}
+.unit .form{font-weight:700;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;
+  padding:3px 7px;border-radius:999px;background:var(--t-good);color:var(--primary);white-space:nowrap}
+.unit.jobaid .form{background:#EAF1F6;color:var(--blue)}
+.unit h3{font-size:15.5px;font-weight:700;color:var(--ink);line-height:1.22}
+.unit .moment{font-size:12.5px;color:var(--slate);line-height:1.4}
+.unit .moment b{color:var(--ink);font-weight:600}
+.unit .foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:4px}
+.unit .len{font-size:11.5px;color:var(--dim);font-weight:600}
+.unit .go{font-size:12px;font-weight:700;color:var(--primary)}
+.unit.jobaid .go{color:var(--blue)}
+
+/* detail overlay */
+#detail{display:none}
+#detail.on{display:block}
+.back{display:inline-flex;align-items:center;gap:7px;background:none;border:none;font:inherit;cursor:pointer;
+  color:var(--primary);font-weight:700;font-size:13px;letter-spacing:.02em;padding:8px 0}
+.dwrap{padding:14px 0 40px}
+.dhead{border-top:4px solid var(--primary);background:var(--surface);border:1px solid var(--hairline);
+  border-top-width:4px;border-radius:0 0 var(--r) var(--r);padding:18px 20px;margin-top:6px}
+.dhead.jobaid{border-top-color:var(--blue)}
+.dhead.red{border-top-color:var(--red)}
+.dhead .ey{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.dhead .form{font-weight:700;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;
+  padding:3px 8px;border-radius:999px;background:var(--t-good);color:var(--primary)}
+.dhead.jobaid .form{background:#EAF1F6;color:var(--blue)}
+.dhead.red .form{background:var(--t-danger);color:var(--red)}
+.dhead .u-n{font-weight:700;font-size:11px;letter-spacing:.08em;color:var(--dim)}
+.dhead h2{font-family:var(--accent);font-weight:700;font-size:clamp(1.3rem,4vw,1.7rem);color:var(--ink);margin:10px 0 0;letter-spacing:-.01em}
+.dhead .obj{margin-top:10px;font-size:14.5px;color:var(--slate)}
+.dhead .obj b{color:var(--ink);font-weight:600}
+.dmeta{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--hairline)}
+.dmeta .m{font-size:12px}
+.dmeta .m .k{display:block;font-weight:700;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.dmeta .m .v{color:var(--ink);font-weight:600;margin-top:2px}
+.body-card{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r);padding:18px 20px;margin-top:14px}
+.body-card h3{font-family:var(--accent);font-weight:600;font-size:15px;color:var(--ink);margin:0 0 8px}
+.body-card h3.sm{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--primary);font-family:var(--sans)}
+.body-card p{font-size:14px;color:var(--body);margin:8px 0;line-height:1.5}
+.body-card p.dim{color:var(--slate)}
+
+/* lists / checklist */
+.clist{list-style:none;display:grid;gap:0;margin:6px 0}
+.clist li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;padding:11px 0;border-bottom:1px solid var(--hairline);font-size:14px}
+.clist li:last-child{border-bottom:0}
+.clist .bx{width:16px;height:16px;border:1.5px solid var(--primary);border-radius:3px;margin-top:2px}
+.clist b{font-weight:600;color:var(--ink)}
+.clist small{display:block;color:var(--dim);font-size:12.5px;margin-top:2px}
+
+/* ECG strip */
+.strip{background:#fff;border:1px solid var(--hairline);border-radius:var(--r);padding:6px;overflow:hidden}
+.strip svg{display:block;width:100%;height:auto}
+
+/* options (click-to-assign) */
+.opts{display:grid;gap:9px;margin-top:4px}
+.opt{display:flex;gap:11px;align-items:flex-start;text-align:left;background:var(--surface);
+  border:1px solid var(--hairline);border-radius:var(--r);padding:12px 14px;cursor:pointer;font:inherit;color:inherit;
+  transition:border-color .12s,background .12s;width:100%}
+.opt:hover:not(:disabled){border-color:var(--primary)}
+.opt:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.opt .mk{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--rule);flex:none;display:grid;place-items:center;
+  font-weight:700;font-size:12px;color:var(--dim)}
+.opt .ot{font-size:14px;color:var(--ink);line-height:1.35}
+.opt.correct{background:var(--t-good);border-color:var(--ok)}
+.opt.correct .mk{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.wrong{background:var(--t-danger);border-color:var(--red)}
+.opt.wrong .mk{background:var(--red);border-color:var(--red);color:#fff}
+.opt.muted{opacity:.55}
+.opt:disabled{cursor:default}
+
+/* confidence */
+.conf{margin-top:14px;padding-top:14px;border-top:1px dashed var(--hairline)}
+.conf .q{font-size:12.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--dim);margin-bottom:9px}
+.confbtns{display:flex;gap:8px;flex-wrap:wrap}
+.cbtn{font:inherit;font-weight:600;font-size:13px;padding:8px 14px;border-radius:999px;border:1px solid var(--hairline);
+  background:var(--surface);color:var(--slate);cursor:pointer}
+.cbtn:hover{border-color:var(--primary);color:var(--primary)}
+.cbtn.sel{background:var(--primary);border-color:var(--primary);color:#fff}
+
+/* feedback callout */
+.callout{margin-top:14px;border-left:5px solid var(--primary);background:var(--t-good);border-radius:0 var(--r) var(--r) 0;
+  padding:13px 16px}
+.callout.warn{border-color:var(--amber);background:var(--t-caution)}
+.callout.bad{border-color:var(--red);background:var(--t-danger)}
+.callout .ml{font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--primary);margin-bottom:5px}
+.callout.warn .ml{color:var(--amber)} .callout.bad .ml{color:var(--red)}
+.callout p{font-size:13.5px;color:var(--body);line-height:1.5;margin:0}
+.callout .resurface{margin-top:8px;font-size:12px;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:6px}
+
+/* vignette */
+.vignette{background:var(--slate);color:#fff;border-radius:var(--r);padding:16px 18px;margin-top:4px}
+.vignette .vl{font-weight:700;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#C7D0DB;margin-bottom:6px}
+.vignette p{font-size:15px;line-height:1.5;color:#fff;margin:0}
+.decision-q{font-size:15px;font-weight:600;color:var(--ink);margin:16px 0 10px}
+
+/* OMW poster */
+.omw{background:var(--surface);border:2px solid var(--primary);border-radius:var(--r);padding:0;overflow:hidden}
+.omw .bar{background:var(--primary);color:#fff;padding:7px 16px;font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:flex;justify-content:space-between}
+.omw .in{padding:18px 20px}
+.omw .in h3{font-family:var(--accent);font-weight:700;font-size:22px;color:var(--ink);margin:0 0 4px}
+.omw .in .sub{color:var(--slate);font-size:13.5px;margin-bottom:14px}
+.omw .seg{display:grid;grid-template-columns:62px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--hairline)}
+.omw .seg .sl{font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--primary);padding-top:2px}
+.omw .seg .sv{font-size:14px;color:var(--ink);line-height:1.45}
+
+/* media shell */
+.media{background:#10181F;border-radius:var(--r);aspect-ratio:16/9;display:grid;place-items:center;position:relative;overflow:hidden}
+.media .play{width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center}
+.media .play::after{content:"";border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:4px}
+.media .tag{position:absolute;left:12px;bottom:11px;color:#C7D0DB;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.media .dur{position:absolute;right:12px;bottom:11px;color:#fff;font-size:12px;font-weight:600;background:rgba(0,0,0,.4);padding:2px 7px;border-radius:3px}
+.audio{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:14px}
+.audio .play{width:44px;height:44px;border-radius:50%;background:var(--primary);display:grid;place-items:center;flex:none}
+.audio .play::after{content:"";border-left:14px solid #fff;border-top:9px solid transparent;border-bottom:9px solid transparent;margin-left:3px}
+.audio .track{flex:1}
+.audio .track .wave{height:5px;background:linear-gradient(90deg,var(--primary) 0 34%,var(--hairline) 34% 100%);border-radius:3px}
+.audio .track .t{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-top:5px;font-weight:600}
+
+/* system map */
+.sysmap{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;margin-top:20px}
+@media(max-width:720px){.sysmap{grid-template-columns:1fr}}
+.libmap{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r);padding:16px}
+.libmap .ml{font-weight:700;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);margin-bottom:12px}
+.cluster{border:1px solid var(--hairline);border-radius:var(--r);padding:9px 11px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.cluster.lit{border-color:var(--primary);background:var(--t-good)}
+.cluster .cn{font-weight:600;color:var(--ink)}
+.cluster.lit .cn{color:var(--primary)}
+.cluster .cc{font-size:11px;color:var(--dim);font-weight:600}
+.cluster.lit .cc{color:var(--primary)}
+.sibs{display:grid;gap:12px}
+.sib{border:1px solid var(--hairline);border-radius:var(--r);border-left:4px solid var(--rule);padding:14px 16px}
+.sib.real{border-left-color:var(--primary);background:var(--t-good)}
+.sib .st{font-weight:700;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--dim)}
+.sib.real .st{color:var(--primary)}
+.sib h3{font-family:var(--accent);font-weight:600;font-size:16px;color:var(--ink);margin:5px 0 4px}
+.sib p{font-size:13px;color:var(--slate);line-height:1.45}
+.sib .lk{display:inline-block;margin-top:10px;font-size:12.5px;font-weight:700;color:var(--primary);
+  border:1px solid var(--primary);border-radius:var(--r);padding:6px 12px;text-decoration:none}
+.sib .lk.pending{color:var(--dim);border-color:var(--hairline);cursor:default}
+
+/* retrieval demo */
+.flashwrap{margin-top:20px;background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r);padding:18px 20px}
+.flashwrap .count{font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.flashwrap .fq{font-size:17px;font-weight:600;color:var(--ink);margin:12px 0 14px;line-height:1.4}
+
+/* red sim */
+.simcard{background:var(--surface);border:1px solid var(--hairline);border-left:5px solid var(--red);border-radius:0 var(--r) var(--r) 0;padding:18px 20px;margin-top:18px}
+.simcard .bad{font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+.simcard h3{font-family:var(--accent);font-weight:600;font-size:18px;color:var(--ink);margin:0 0 8px}
+.simcard p{font-size:14px;color:var(--body);line-height:1.5;margin:8px 0}
+.simcard .vars{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+.simcard .var{font-size:12px;font-weight:600;color:var(--slate);background:var(--t-neutral);padding:4px 10px;border-radius:999px}
+.simcard .land{margin-top:12px;padding-top:12px;border-top:1px solid var(--hairline);font-size:14px;font-weight:600;color:var(--ink)}
+.simcard .land b{color:var(--red)}
+
+/* staged element engine */
+.stagerail{display:flex;gap:6px;margin:18px 0 16px;align-items:stretch}
+.stagerail .s{flex:1;text-align:center;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);padding-bottom:8px;border-bottom:2px solid var(--hairline);transition:color .15s,border-color .15s;line-height:1.2}
+.stagerail .s.active{color:var(--primary);border-bottom-color:var(--primary)}
+.stagerail .s.done{color:var(--ok);border-bottom-color:var(--ok)}
+.stageview{min-height:120px}
+.stageq{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);margin:0 0 11px}
+.srnav{display:flex;justify-content:space-between;gap:12px;margin-top:20px}
+.srnav button{font:inherit;font-weight:700;font-size:14px;padding:11px 20px;border-radius:var(--r);cursor:pointer;border:1px solid var(--primary)}
+.srnav .prev{background:#fff;color:var(--primary)}
+.srnav .prev:disabled{opacity:.4;cursor:default;border-color:var(--hairline);color:var(--dim)}
+.srnav .next{background:var(--primary);color:#fff}
+.srnav .next.done-cta{background:var(--ok);border-color:var(--ok)}
+.why{background:var(--t-good);border-left:4px solid var(--primary);border-radius:0 var(--r) var(--r) 0;padding:15px 17px}
+.why p{font-size:15px;color:var(--ink);line-height:1.55;margin:0}
+.why p + p{margin-top:9px}
+.tldr{background:var(--surface);border:2px solid var(--primary);border-radius:var(--r);padding:18px 20px}
+.tldr .tl{font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--primary);margin-bottom:8px}
+.tldr p{font-size:15.5px;color:var(--ink);line-height:1.5;margin:0}
+.tldr .adapt{margin-top:11px;padding-top:11px;border-top:1px solid var(--hairline);font-size:12.5px;color:var(--dim);font-style:italic}
+.annot{margin-top:12px;display:grid;gap:8px;background:var(--t-good);border-radius:var(--r);padding:13px 15px}
+.annot .ah{font-weight:700;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--primary);margin-bottom:2px}
+.annot .a{display:grid;grid-template-columns:16px 1fr;gap:10px;font-size:13.5px;color:var(--ink);align-items:start}
+.annot .a .d{width:10px;height:10px;border-radius:2px;margin-top:4px;background:var(--primary);flex:none}
+.annot .a b{font-weight:600}
+.debrief{margin-top:14px;background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r);padding:15px 17px}
+.debrief .dh{font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--slate);margin-bottom:10px}
+.debrief .path{display:grid;grid-template-columns:20px 1fr;gap:10px;font-size:13.5px;padding:8px 0;border-top:1px solid var(--hairline);align-items:start}
+.debrief .path:first-of-type{border-top:none}
+.debrief .path .ic{font-weight:700}
+.debrief .path .ic.ok{color:var(--ok)} .debrief .path .ic.no{color:var(--red)}
+/* evidence & measure stage */
+.evid{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r);padding:13px 15px}
+.evid .eh{font-weight:700;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--primary);margin-bottom:9px}
+.erow{display:grid;grid-template-columns:160px 1fr;gap:12px;padding:8px 0;border-top:1px solid var(--hairline);font-size:13px}
+.erow:first-of-type{border-top:none}
+.erow .ek{font-weight:700;color:var(--ink)}
+.erow .ev{color:var(--slate)}
+.measure{margin-top:12px;background:var(--t-good);border-left:4px solid var(--ok);border-radius:0 var(--r) var(--r) 0;padding:12px 15px}
+.measure .mh{font-weight:700;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ok);margin-bottom:5px}
+.measure p{font-size:13px;color:var(--ink);line-height:1.5;margin:0}
+/* crosswalk */
+.xwalk{margin-top:18px;border-top:1px solid var(--hairline)}
+.xrow{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;padding:12px 0;border-bottom:1px solid var(--hairline)}
+.xrow .old{font-size:13.5px;color:var(--slate)}
+.xrow .old b{color:var(--ink);font-weight:600}
+.xrow .new{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.xchip{font:inherit;font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:999px;background:var(--t-good);color:var(--primary);white-space:nowrap;border:none;cursor:pointer}
+.xchip:hover{background:#d9ece4}
+.xchip.cut{background:var(--t-neutral);color:var(--dim);cursor:default}
+.xchip.sim{background:var(--t-danger);color:var(--red);cursor:default}
+.xnote{margin-top:14px;font-size:12.5px;color:var(--slate);line-height:1.5}
+.xnote b{color:var(--ink);font-weight:600}
+@media(max-width:560px){.erow{grid-template-columns:1fr}.xrow{grid-template-columns:1fr}.xrow .new{justify-content:flex-start}}
+.clist.ckmode li{cursor:pointer}
+.clist li.ck .bx{background:var(--ok);border-color:var(--ok)}
+.clist li.ck .bx::after{content:"✓";color:#fff;font-size:11px;font-weight:700;display:block;line-height:13px;text-align:center}
+/* old-way module (quarantined styles) */
+.badtrigger{margin-top:12px;font:inherit;font-weight:700;font-size:12.5px;color:var(--secondary);background:#fff;border:1px solid var(--secondary);border-radius:var(--r);padding:7px 12px;cursor:pointer;display:inline-block}
+.badtrigger:hover{background:var(--t-caution)}
+.bmlabel{background:var(--ink);color:#fff;font-family:var(--sans);font-size:12.5px;padding:10px 14px;border-radius:var(--r) var(--r) 0 0;display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:6px;flex-wrap:wrap}
+.bmlabel b{font-weight:700;letter-spacing:.04em}
+.bmlabel span{color:#B9C4D0;font-size:11.5px}
+.bmframe{font-family:"Times New Roman",Georgia,serif;background:#e4e8ec;border:2px solid #9aa3ac;border-top:none;border-radius:0 0 4px 4px;overflow:hidden}
+.bmchrome{background:linear-gradient(#5a7a99,#3b5673);color:#fff;padding:7px 12px;display:flex;justify-content:space-between;align-items:center;font-family:Arial,Helvetica,sans-serif;font-size:11.5px}
+.bmchrome .wx{opacity:.85}
+.bmbody{background:#fff;padding:24px 26px;min-height:390px}
+.bmbody h1{font-family:Arial,Helvetica,sans-serif;font-weight:800;font-size:22px;color:#1f3b5c;text-align:center;letter-spacing:.01em;text-shadow:1.5px 1.5px 0 #c3ccd5;margin:6px 0 10px}
+.bmbody h2{font-family:Arial,Helvetica,sans-serif;font-weight:bold;font-size:15px;color:#2a5a86;border-bottom:2px solid #2a5a86;padding-bottom:4px;margin:0 0 12px}
+.bmbody .sub{text-align:center;color:#555;font-size:12.5px;margin-bottom:14px}
+.bmbody p{font-size:12px;line-height:1.5;color:#222;text-align:justify;margin:8px 0}
+.bmbody ol{font-size:12px;line-height:1.7;color:#222;padding-left:24px;margin:6px 0}
+.bmbody .tbl{width:100%;border-collapse:collapse;font-size:11.5px;margin:10px 0}
+.bmbody .tbl td,.bmbody .tbl th{border:1px solid #9aa3ac;padding:4px 8px;text-align:left}
+.bmbody .tbl th{background:#dfe3e8}
+.bmheart{width:46px;height:46px;display:block;margin:4px auto 6px}
+.bmquiz{font-size:12.5px;color:#222}
+.bmquiz label{display:block;padding:5px 2px;cursor:default;border-bottom:1px dotted #cdd4db}
+.bmdone{text-align:center;padding:18px 0}
+.bmdone .chk{font-size:40px;color:#4e8a3a;line-height:1}
+.bmfooter{background:#eef1f4;border-top:1px solid #c3ccd5;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;font-family:Arial,Helvetica,sans-serif;font-size:11.5px;color:#333;gap:10px}
+.bmbar{height:13px;background:#c3ccd5;border:1px solid #9aa3ac;border-radius:7px;width:150px;overflow:hidden;display:inline-block;vertical-align:middle}
+.bmbar > i{display:block;height:100%;background:linear-gradient(#7ab85a,#4e7a3a)}
+.bmbtn{font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;padding:5px 15px;border:1px solid #8a97a5;border-radius:3px;background:linear-gradient(#fcfdfe,#d7dde3);cursor:pointer;color:#1f3b5c}
+.bmbtn:disabled{opacity:.45;cursor:default}
+.bmnarr{background:#eef3f7;border-left:4px solid #5a7a99;padding:9px 12px;margin:14px 0 0;font-size:11.5px;color:#334;line-height:1.5}
+.bmnl{font-family:Arial,Helvetica,sans-serif;font-weight:bold;font-size:9.5px;letter-spacing:.07em;color:#5a7a99;display:block;margin-bottom:4px}
+.bmquiz label{display:block;padding:7px 9px;cursor:pointer;border:1px solid #cdd4db;border-radius:3px;margin:5px 0;background:#fafbfc;font-size:12px;color:#222}
+.bmquiz label.sel{border-color:#2a5a86;background:#eaf1f7}
+.bmquiz label.ok{border-color:#2e7d32;background:#e8f3e9}
+.bmquiz label.no{border-color:#b3261e;background:#f6e6e4}
+.bmtestq{margin:14px 0}
+.bmtestq > b{display:block;margin-bottom:5px;color:#1f3b5c;font-family:Arial,Helvetica,sans-serif;font-size:12px}
+.bmfb{margin-top:9px;font-size:12px;font-weight:bold;font-family:Arial,Helvetica,sans-serif}
+.bmgloss{font-size:12px;margin:4px 0 0}
+.bmgloss dt{font-weight:bold;color:#1f3b5c;margin-top:9px;font-family:Arial,Helvetica,sans-serif;font-size:12px}
+.bmgloss dd{margin:2px 0 0 0;color:#333}
+.bmrefs{font-size:11px;color:#333;line-height:1.5;padding-left:22px}
+.bmrefs li{margin:7px 0}
+footer.ft{padding:26px 0 40px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--dim)}
+footer.ft .r{text-align:right}
+.reset{background:none;border:none;color:var(--primary);font:inherit;font-weight:700;font-size:13px;cursor:pointer;padding:8px 0;text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+
+<!-- ================= HUB ================= -->
+<main id="hub" class="wrap">
+
+  <header class="hd">
+    <div class="row">
+      <div>
+        <p class="eyebrow t">A Microlearning Example · Nursing Professional Development</p>
+        <h1>AF with RVR — the elements, for real</h1>
+        <p class="lede">The worked example from <i>“TL;DR: Making Microlearning Actually Work in NPD Practice.”</i> One clinical topic, decomposed into real, stand-alone micro-units — the kind you can actually tap through at the moment of need. Open any card below.</p>
+        <p style="margin-top:14px;margin-bottom:0"><a href="https://scottbrickner.github.io/ecg-elements-rn/" target="_blank" rel="noopener" style="font-weight:700;font-size:14px">↗ Or jump to the live ECG Element Library — 14 interactive elements nurses use at the bedside now</a></p>
+      </div>
+      <span class="idtag">ML Example · AF-RVR</span>
+    </div>
+    <p class="note"><b>Illustrative demo content.</b> Clinical specifics here are examples to show the <i>design</i> — adapt every criterion, agent, and target to your own unit’s protocols. The design is what transfers; the content stays yours.</p>
+  </header>
+
+  <!-- ARC -->
+  <section>
+    <p class="eyebrow">The through-line</p>
+    <h2>One bloated module → ten units → a system</h2>
+    <p class="sub">Microlearning isn’t a short lecture. It’s the discipline of deciding what’s separable, building each piece to one objective and one moment, and wiring the pieces into a library that keeps them fresh.</p>
+    <div class="arc">
+      <div class="step">
+        <div class="ix">v0 · THE ANTI-PATTERN</div>
+        <h3>One 12-minute module</h3>
+        <p>“Atrial Fibrillation with RVR.” Eight objectives, assigned in March, completion tracked. 94% done, nothing changed. A lecture in a smaller container.</p>
+        <span class="chip">8 objectives · 1 unit</span>
+        <div><button class="badtrigger" data-bad="1">▸ Sit through the old module (22 screens)</button></div>
+      </div>
+      <div class="step">
+        <div class="ix">v1–v3 · THE BUILD</div>
+        <h3>Ten single-objective units</h3>
+        <p>One objective, one moment, one form each — triaged green vs. red, sequenced over six weeks, with retrieval that targets confident misses.</p>
+        <span class="chip">10 units · 6 forms</span>
+      </div>
+      <div class="step red">
+        <div class="ix">vFinal · THE SYSTEM</div>
+        <h3>One cluster in a library</h3>
+        <p>The units live as an AF cluster in the ECG Element Library — shared retrieval, cross-links, and a real prevention sibling, <b>RN-PAF-03</b>.</p>
+        <span class="chip">+ simulation + job aid</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ELEMENTS GALLERY -->
+  <section>
+    <p class="eyebrow t">Try the elements</p>
+    <h2>Ten units, each built to the moment</h2>
+    <p class="sub">“No single form is microlearning.” Each unit below picks the form the objective and the moment demanded — and the green ones are live. Tap to open.</p>
+
+    <div class="grp"><span class="gl">Recognize</span><span class="gr"></span></div>
+    <div class="units" id="g-recognize"></div>
+
+    <div class="grp"><span class="gl">Act</span><span class="gr"></span></div>
+    <div class="units" id="g-act"></div>
+
+    <div class="grp"><span class="gl">Escalate &amp; after</span><span class="gr"></span></div>
+    <div class="units" id="g-escalate"></div>
+  </section>
+
+  <!-- CROSSWALK -->
+  <section>
+    <p class="eyebrow t">From monolith to units</p>
+    <h2>Every objective, re-homed</h2>
+    <p class="sub">The old module's eight objectives didn't vanish — they were decomposed, split, merged, or sent where they actually belong. Here's where each one went. (Tap a unit to open it.)</p>
+    <div class="xwalk">
+      <div class="xrow"><div class="old"><b>① Recognize AF on the monitor</b></div><div class="new"><button class="xchip" data-unit="u1">Unit 1 · Recognize</button></div></div>
+      <div class="xrow"><div class="old"><b>② Explain the pathophysiology</b> — mechanism detail</div><div class="new"><span class="xchip cut">Cut — context, not a moment-of-need unit</span></div></div>
+      <div class="xrow"><div class="old"><b>③ Identify precipitants</b></div><div class="new"><button class="xchip" data-unit="u3">Unit 3 · Mg/K</button></div></div>
+      <div class="xrow"><div class="old"><b>④ Differentiate rate vs. rhythm control</b></div><div class="new"><button class="xchip" data-unit="u4">Unit 4 · Job aid</button></div></div>
+      <div class="xrow"><div class="old"><b>⑤ Select a rate-control agent</b></div><div class="new"><button class="xchip" data-unit="u4">Unit 4</button><button class="xchip" data-unit="u6">Unit 6 · Low EF</button></div></div>
+      <div class="xrow"><div class="old"><b>⑥ Magnesium & potassium repletion</b></div><div class="new"><button class="xchip" data-unit="u3">Unit 3 · Mg/K</button></div></div>
+      <div class="xrow"><div class="old"><b>⑦ Instability → cardioversion</b></div><div class="new"><button class="xchip" data-unit="u2">Unit 2 · Decide</button><button class="xchip" data-unit="u8">Unit 8 · Cardiovert</button></div></div>
+      <div class="xrow"><div class="old"><b>⑧ Document & escalate</b></div><div class="new"><button class="xchip" data-unit="u7">Unit 7 · Escalate</button><button class="xchip" data-unit="u9">Unit 9 · Monitor</button></div></div>
+    </div>
+    <p class="xnote"><b>Also surfaced along the way:</b> infusion setup → <button class="xchip" data-unit="u5" style="padding:2px 9px">Unit 5</button> · anticoagulation → <button class="xchip" data-unit="u10" style="padding:2px 9px">Unit 10</button> · and the integrated <i>"problem or symptom?"</i> call → <span class="xchip sim" style="padding:2px 9px">Simulation — not microlearning</span>. Eight objectives became ten units, a job aid, and a sim — because that's what they actually were.</p>
+  </section>
+
+  <!-- RETRIEVAL ENGINE -->
+  <section>
+    <p class="eyebrow t">The layer that makes it stick</p>
+    <h2>Retrieval that targets confident misses</h2>
+    <p class="sub">Two items per unit; each item appears <b>twice, not once</b> (double exposure beat single in Price et al., 26,258 physicians). The highest-yield targeting rule: resurface what learners got wrong <i>while confident</i>. Try it — rate how sure you are, then answer.</p>
+    <div id="flash" class="flashwrap"></div>
+  </section>
+
+  <!-- RED LIGHT -->
+  <section>
+    <p class="eyebrow" style="color:var(--red)">Where microlearning stops</p>
+    <h2>The honest half: some of this isn’t a microlearning job</h2>
+    <p class="sub">Fragmenting integrated reasoning doesn’t reduce cognitive load — it removes the scaffolding that made it coherent, and load goes <i>up</i>.</p>
+    <div class="simcard">
+      <div class="bad">Red light · belongs in simulation</div>
+      <h3>“Is the AF the problem, or a symptom of the problem?”</h3>
+      <p>Your post-op day-one patient is in AF with RVR <b>and hypotensive</b>. Is the rhythm causing the pressure, or the pressure causing the rhythm? Tamponade? Hypovolemia from chest-tube output? Pain? Hypoxia? Rate-control now, or call the surgeon?</p>
+      <div class="vars"><span class="var">many variables</span><span class="var">time pressure</span><span class="var">incomplete info</span><span class="var">no single right answer</span></div>
+      <p class="land">That’s integrated reasoning → <b>simulation + debrief + coach.</b> Microlearning carries the separable knowledge and keeps it fresh, so sim time is spent on the reasoning — not on teaching what magnesium has to do with anything.</p>
+    </div>
+  </section>
+
+  <!-- SYSTEM -->
+  <section style="border-bottom:none">
+    <p class="eyebrow t">Integrate into a system</p>
+    <h2>A pile of ten units is still orphans</h2>
+    <p class="sub">The system is the library + the schedule + a shared retrieval bank + cross-links. The AF/RVR series is one cluster in the ECG Element Library — and its real sibling is already shipped.</p>
+    <div class="sysmap">
+      <div class="libmap">
+        <div class="ml">ECG Element Library — rhythm clusters</div>
+        <div class="cluster"><span class="cn">Sinus &amp; conduction</span><span class="cc">6 units</span></div>
+        <div class="cluster lit"><span class="cn">Atrial fibrillation / RVR</span><span class="cc">10 units · this series</span></div>
+        <div class="cluster"><span class="cn">Atrial flutter &amp; SVT</span><span class="cc">7 units</span></div>
+        <div class="cluster"><span class="cn">Ventricular rhythms</span><span class="cc">8 units</span></div>
+        <div class="cluster"><span class="cn">Blocks &amp; pacing</span><span class="cc">9 units</span></div>
+        <p class="note" style="margin-top:12px">Shared retrieval bank — the AF-recognition item lives in the library’s rhythm-recognition bank and resurfaces across clusters. Cross-links: recognition ↔ broader rhythm ID; instability ↔ general deterioration / escalation.</p>
+      </div>
+      <div class="sibs">
+        <div class="sib">
+          <div class="st">This series · management</div>
+          <h3>Managing new AF with RVR</h3>
+          <p>Ten units — recognize, act, escalate — plus the retrieval schedule and the sim anchor. The hypothetical built properly.</p>
+        </div>
+        <div class="sib real">
+          <div class="st">The real sibling · prevention</div>
+          <h3>RN-PAF-03 — Preventing Post-op AF</h3>
+          <p>The shipped prevention bookend in the ECG Element Library: Why it matters → Sort → Watch → Decide → Recall → TL;DR, with confidence-rated retrieval. This discipline is exactly why the real one looks like this.</p>
+          <a class="lk" id="rnpaf-link" href="https://scottbrickner.github.io/ecg-elements-rn/" target="_blank" rel="noopener">Open the live ECG Element Library →</a>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:20px;background:var(--t-good);border:1px solid var(--primary);border-radius:var(--r);padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+      <div>
+        <div class="eyebrow t">Already running — not a demo</div>
+        <p style="font-size:15.5px;color:var(--ink);font-weight:600;margin-top:5px;max-width:52ch">The ECG Element Library is live: 14 interactive elements nurses are using at the bedside right now. This AF/RVR page shows how units like those get built.</p>
+      </div>
+      <a href="https://scottbrickner.github.io/ecg-elements-rn/" target="_blank" rel="noopener" style="white-space:nowrap;background:var(--primary);color:#fff;font-weight:700;font-size:14px;text-decoration:none;padding:12px 20px;border-radius:var(--r)">Explore the live library →</a>
+    </div>
+  </section>
+
+  <footer class="ft">
+    <div>Scott Brickner, MSN, RN, CCRN · Nursing Professional Development · Keck Medicine of USC</div>
+    <div class="r">Design after Mayer (2021), De Gagne (2019), Price et&nbsp;al. (2025), Bannister et&nbsp;al. (2020)</div>
+  </footer>
+</main>
+
+<!-- ================= DETAIL ================= -->
+<div id="detail" class="wrap">
+  <button class="back" id="back">← All elements</button>
+  <div class="dwrap" id="detailBody"></div>
+</div>
+
+<script>
+/* ---------- ECG strip generator (AF with RVR: irregularly irregular, no P waves) ---------- */
+function afStrip(){
+  const W=680,H=150,base=H*0.62;
+  // irregular R-R intervals
+  const rr=[70,120,205,255,330,380,470,520,600];
+  let d="M0 "+base;
+  let x=0;
+  const seg=(toX)=>{ // fibrillatory wavy baseline up to toX
+    while(x<toX-6){const step=6+Math.random()*6;const y=base+(Math.random()*7-3.5);x=Math.min(x+step,toX);d+=` L${x.toFixed(1)} ${y.toFixed(1)}`;}
+    d+=` L${toX} ${base}`;x=toX;
+  };
+  const qrs=(cx)=>{ // narrow QRS complex
+    d+=` L${cx-6} ${base} L${cx-3} ${base+10} L${cx} ${base-46} L${cx+4} ${base+16} L${cx+8} ${base}`;x=cx+8;
+  };
+  rr.forEach(cx=>{seg(cx-10);qrs(cx);});
+  seg(W);
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Rhythm strip: irregularly irregular narrow-complex tachycardia with no discernible P waves">
+    <rect width="${W}" height="${H}" fill="#fff"/>
+    <g stroke="#F0D8D8" stroke-width="1">${Array.from({length:14},(_,i)=>`<line x1="${i*50}" y1="0" x2="${i*50}" y2="${H}"/>`).join("")}${Array.from({length:4},(_,i)=>`<line x1="0" y1="${i*40+15}" x2="${W}" y2="${i*40+15}"/>`).join("")}</g>
+    <path d="${d}" fill="none" stroke="#17212B" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    <text x="10" y="20" font-family="monospace" font-size="12" fill="#66727F">II · 25 mm/s · HR ~150</text>
+  </svg>`;
+}
+
+/* ---------- unit data ---------- */
+const UNITS={
+ u1:{n:"Unit 1",group:"recognize",form:"Retrieval",len:"90 sec",live:true,
+   title:"Distinguish AF from other irregular rhythms",
+   moment:"At the monitor, first look",
+   type:"retrieval"},
+ u2:{n:"Unit 2",group:"recognize",form:"Branching",len:"2 min",live:true,
+   title:"Apply your unit’s instability criteria",
+   moment:"Bedside, first two minutes",
+   type:"branching"},
+ u3:{n:"Unit 3",group:"act",form:"One Minute Wonder",len:"60 sec",live:true,
+   title:"Check & replace Mg and K before escalating",
+   moment:"Bedside, immediately",
+   type:"omw"},
+ u4:{n:"Unit 4",group:"act",form:"QR job aid",len:"reference",live:true,jobaid:true,
+   title:"Locate the correct rate-control agent",
+   moment:"Bedside, at the pump",
+   type:"jobaid"},
+ u5:{n:"Unit 5",group:"act",form:"Video",len:"3 min",live:true,
+   title:"Set up & titrate the antiarrhythmic infusion",
+   moment:"At the pump, first time",
+   type:"video"},
+ u6:{n:"Unit 6",group:"act",form:"Micro-case",len:"2 min",live:true,
+   title:"Why reduced EF changes the rate-control choice",
+   moment:"Before the shift, or on demand",
+   type:"microcase"},
+ u7:{n:"Unit 7",group:"escalate",form:"Nano card",len:"60 sec",live:true,
+   title:"State the escalation criteria & who to call",
+   moment:"Bedside, decision point",
+   type:"nano"},
+ u8:{n:"Unit 8",group:"act",form:"Video",len:"2 min",live:true,
+   title:"Set up synchronized cardioversion",
+   moment:"Before the procedure",
+   type:"video8"},
+ u9:{n:"Unit 9",group:"escalate",form:"Checklist",len:"90 sec",live:true,
+   title:"Monitor the four hours after conversion",
+   moment:"Post-event",
+   type:"checklist9"},
+ u10:{n:"Unit 10",group:"escalate",form:"Audio",len:"3 min",live:true,
+   title:"The anticoagulation bleeding-vs-stroke window",
+   moment:"Rounds, or on demand",
+   type:"audio"}
+};
+const ORDER=["u1","u2","u3","u4","u5","u6","u7","u8","u9","u10"];
+
+/* ---------- gallery render ---------- */
+function card(id){
+  const u=UNITS[id];
+  const cls="unit"+(u.jobaid?" jobaid":"");
+  return `<button class="${cls}" data-unit="${id}">
+    <div class="top"><span class="u-n">${u.n}</span><span class="form">${u.form}</span></div>
+    <h3>${u.title}</h3>
+    <div class="moment"><b>Moment:</b> ${u.moment}</div>
+    <div class="foot"><span class="len">${u.len}</span><span class="go">Open →</span></div>
+  </button>`;
+}
+function fillGallery(){
+  const g={recognize:[],act:[],escalate:[]};
+  ORDER.forEach(id=>g[UNITS[id].group].push(card(id)));
+  document.getElementById("g-recognize").innerHTML=g.recognize.join("");
+  document.getElementById("g-act").innerHTML=g.act.join("");
+  document.getElementById("g-escalate").innerHTML=g.escalate.join("");
+}
+
+/* ---------- detail renderers ---------- */
+function dhead(u,extraClass){
+  return `<div class="dhead ${extraClass||""}">
+    <div class="ey"><span class="u-n">${u.n}</span><span class="form">${u.form}</span></div>
+    <h2>${u.title}</h2>
+    <div class="dmeta">
+      <div class="m"><span class="k">Objective</span><span class="v">${u.title}</span></div>
+      <div class="m"><span class="k">Moment of need</span><span class="v">${u.moment}</span></div>
+      <div class="m"><span class="k">Length</span><span class="v">${u.len}</span></div>
+    </div>
+  </div>`;
+}
+
+const RENDER={
+ /* Unit 1 — retrieval + confidence */
+ retrieval(u){
+   return {html:dhead(u)+`
+    <div class="body-card">
+      <h3 class="sm">The strip</h3>
+      <div class="strip">${afStrip()}</div>
+      <p class="decision-q">What rhythm is this?</p>
+      <div class="conf" id="r-conf">
+        <div class="q">First — how sure are you?</div>
+        <div class="confbtns">
+          <button class="cbtn" data-c="guess">Guessing</button>
+          <button class="cbtn" data-c="fair">Fairly sure</button>
+          <button class="cbtn" data-c="certain">Certain</button>
+        </div>
+      </div>
+      <div class="opts" id="r-opts" style="margin-top:14px"></div>
+      <div id="r-fb"></div>
+    </div>`,
+    init(root){
+      let conf=null;
+      const opts=[
+        {t:"AF with RVR",correct:true},
+        {t:"Atrial flutter with 2:1 conduction",correct:false},
+        {t:"Multifocal atrial tachycardia (MAT)",correct:false},
+        {t:"Sinus tach with frequent PACs",correct:false}
+      ];
+      const optBox=root.querySelector("#r-opts");
+      root.querySelectorAll("#r-conf .cbtn").forEach(b=>b.onclick=()=>{
+        conf=b.dataset.c;
+        root.querySelectorAll("#r-conf .cbtn").forEach(x=>x.classList.toggle("sel",x===b));
+        renderOpts();
+      });
+      function renderOpts(){
+        optBox.innerHTML=opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="mk">${String.fromCharCode(65+i)}</span><span class="ot">${o.t}</span></button>`).join("");
+        optBox.querySelectorAll(".opt").forEach(btn=>btn.onclick=()=>answer(parseInt(btn.dataset.i)));
+      }
+      function answer(i){
+        const chosen=opts[i];
+        optBox.querySelectorAll(".opt").forEach((btn,j)=>{
+          btn.disabled=true;
+          if(opts[j].correct)btn.classList.add("correct");
+          else if(j===i)btn.classList.add("wrong");
+          else btn.classList.add("muted");
+        });
+        const confidentMiss=!chosen.correct && conf==="certain";
+        let cls,ml,msg;
+        if(chosen.correct){cls="";ml="That’s it";msg="<b>Irregularly irregular, no organized P waves, a fibrillatory baseline, narrow QRS at ~150.</b> Flutter would be regular with sawtooth F-waves; MAT would show ≥3 distinct P-wave shapes; sinus-with-PACs keeps an underlying sinus P before most beats.";}
+        else {cls="bad";ml="Not quite";msg="This is <b>AF with RVR</b> — irregularly irregular, no organized P waves, fibrillatory baseline. The giveaway against the others: no sawtooth (rules out flutter), no visible P-wave shapes at all (rules out MAT and PACs).";}
+        const resurface = confidentMiss
+          ? `<div class="resurface">↻ Confident miss — this item is flagged to resurface <b>twice</b>.</div>`
+          : (chosen.correct && conf==="certain"
+              ? `<div class="resurface" style="color:var(--dim)">✓ Confident + correct — spaced once and retired.</div>`
+              : `<div class="resurface" style="color:var(--dim)">↻ Scheduled to reappear once more this cycle.</div>`);
+        root.querySelector("#r-fb").innerHTML=`<div class="callout ${cls}"><div class="ml">${ml}</div><p>${msg}</p>${resurface}</div>`;
+      }
+      // allow answering before confidence, but nudge
+      renderOpts();
+    }};
+ },
+
+ /* Unit 2 — branching scenario */
+ branching(u){
+   return {html:dhead(u)+`
+    <div class="body-card">
+      <div class="vignette">
+        <div class="vl">The patient</div>
+        <p>POD-1 after CABG. New AF, ventricular rate <b>155</b>. BP <b>126/70</b>, awake and conversant, no chest pain, lungs clear, making urine.</p>
+      </div>
+      <div id="b-stage"></div>
+    </div>`,
+    init(root){
+      const stage=root.querySelector("#b-stage");
+      const nodes={
+        start:{
+          q:"By your unit’s instability criteria — stable or unstable?",
+          opts:[
+            {t:"Stable",correct:true,go:"reflex"},
+            {t:"Unstable → prep for cardioversion",correct:false,go:"start",
+             fb:{cls:"bad",ml:"Re-check the criteria",msg:"Instability means <b>hypotension, altered mentation, ischemic chest pain, or acute heart failure</b>. This patient has none — BP is fine, she’s alert, no pain, lungs clear. Calling this unstable treats the number, not the patient. Decide again."}}
+          ]
+        },
+        reflex:{
+          pre:"You called it <b>stable</b> — so you have time to rate-control.",
+          q:"Before you escalate or push a rate-control agent, what’s the reflex?",
+          opts:[
+            {t:"Check & replace magnesium and potassium",correct:true,go:"resolve"},
+            {t:"Push IV diltiazem now",correct:false,go:"reflex",
+             fb:{cls:"warn",ml:"Hold the reflex",msg:"Post-op AF rides on <b>low Mg and K</b>. Push rate control over an uncorrected electrolyte deficit and it underperforms — and you risk rebound. Check and replace Mg/K to your unit’s post-op targets <i>first</i>, then rate-control per protocol."}}
+          ]
+        },
+        resolve:{
+          pre:"You checked <b>Mg and K</b> — Mg 1.6 and K 3.8, both repleted to target.",
+          terminal:true,
+          fb:{cls:"",ml:"Resolved",msg:"Rate eases toward ~110. Reassess: still stable → rate-control per protocol, document, and monitor. <b>The instability criteria carried the decision; the electrolyte check was the pre-escalation reflex.</b> Neither needed a 12-minute module — each was one unit, at one moment."}
+        }
+      };
+      function draw(key){
+        const node=nodes[key];
+        let h="";
+        if(node.pre)h+=`<p class="decision-q" style="color:var(--slate);font-weight:400;font-size:14px">${node.pre}</p>`;
+        if(node.terminal){
+          h+=`<div class="callout ${node.fb.cls}"><div class="ml">${node.fb.ml}</div><p>${node.fb.msg}</p></div>
+              <button class="reset" id="b-again">↺ Run it again</button>`;
+          stage.innerHTML=h;
+          root.querySelector("#b-again").onclick=()=>draw("start");
+          return;
+        }
+        h+=`<p class="decision-q">${node.q}</p><div class="opts">`+
+          node.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="mk">${String.fromCharCode(65+i)}</span><span class="ot">${o.t}</span></button>`).join("")+
+          `</div><div id="b-fb"></div>`;
+        stage.innerHTML=h;
+        stage.querySelectorAll(".opt").forEach((btn,i)=>btn.onclick=()=>pick(key,i));
+      }
+      function pick(key,i){
+        const node=nodes[key],o=node.opts[i];
+        stage.querySelectorAll(".opt").forEach((btn,j)=>{
+          btn.disabled=true;
+          if(node.opts[j].correct)btn.classList.add("correct");
+          else if(j===i)btn.classList.add("wrong");
+          else btn.classList.add("muted");
+        });
+        if(o.correct){
+          stage.querySelector("#b-fb").innerHTML=`<div class="callout"><div class="ml">Good call</div><p>Advancing…</p></div>`;
+          setTimeout(()=>draw(o.go),650);
+        } else {
+          stage.querySelector("#b-fb").innerHTML=`<div class="callout ${o.fb.cls}"><div class="ml">${o.fb.ml}</div><p>${o.fb.msg}</p></div>
+            <button class="reset" id="b-retry">↺ Decide again</button>`;
+          root.querySelector("#b-retry").onclick=()=>draw(o.go);
+        }
+      }
+      draw("start");
+    }};
+ },
+
+ /* Unit 3 — One Minute Wonder poster */
+ omw(u){
+   return {html:dhead(u)+`
+    <p class="body-card" style="font-size:13px;color:var(--dim);margin-top:14px">A One Minute Wonder is a single-reflex poster, posted where the decision happens — here, at the med room. One thing, read in a minute.</p>
+    <div class="omw" style="margin-top:14px">
+      <div class="bar"><span>One Minute Wonder</span><span>60 sec</span></div>
+      <div class="in">
+        <h3>Before you escalate: Mg &amp; K</h3>
+        <div class="sub">New post-op AF with RVR? Fix the floor first.</div>
+        <div class="seg"><div class="sl">Why</div><div class="sv">Post-op AF rides on low magnesium and potassium. Correct them and rate control actually works — skip them and it won’t.</div></div>
+        <div class="seg"><div class="sl">When</div><div class="sv">The moment you see new post-op AF — <b>before</b> you escalate or push a rate agent.</div></div>
+        <div class="seg"><div class="sl">Do</div><div class="sv">Check Mg &amp; K → replace to your unit’s post-op targets → <i>then</i> rate-control per protocol.</div></div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:14px"><div class="ml">Why this form</div><p>One objective, one reflex, posted at the point of decision. No login, no module, no LMS — the knowledge meets the moment.</p></div>`,
+    init(){}};
+ },
+
+ /* Unit 4 — QR job aid */
+ jobaid(u){
+   return {html:dhead(u,"jobaid")+`
+    <div class="callout warn" style="margin-top:14px"><div class="ml">This is performance support — not a lesson</div><p>A job aid answers the question <i>in the moment</i> so no one has to have memorized it. If you also need the knowledge durable, pair it with the retrieval unit — don’t pretend the job aid taught it.</p></div>
+    <div class="body-card">
+      <h3 class="sm">At the pump — find the agent</h3>
+      <ul class="clist">
+        <li><span class="bx" style="border-color:var(--blue)"></span><div><b>Preserved EF</b><small>Beta-blocker or diltiazem per protocol — rate control is the goal.</small></div></li>
+        <li><span class="bx" style="border-color:var(--blue)"></span><div><b>Reduced EF (low systolic function)</b><small>Avoid negative inotropes (diltiazem/verapamil give pause). Amiodarone is often preferred — confirm against protocol.</small></div></li>
+        <li><span class="bx" style="border-color:var(--blue)"></span><div><b>Rate vs. rhythm</b><small>Acute post-op, stable: rate control first. Rhythm control is a provider decision.</small></div></li>
+        <li><span class="bx" style="border-color:var(--blue)"></span><div><b>Still unsure / outside criteria</b><small>Stop and escalate (see Unit 7) rather than guess at the pump.</small></div></li>
+      </ul>
+    </div>`,
+    init(){}};
+ },
+
+ /* Unit 5 — infusion video */
+ video(u){
+   return {html:dhead(u)+`
+    <div class="body-card">
+      <h3 class="sm">Demonstration</h3>
+      <div class="media"><div class="play"></div><span class="tag">Screen-recorded demo</span><span class="dur">3:00</span></div>
+      <p class="dim" style="margin-top:12px">Anything with hands → <b>show it, don’t describe it.</b> The real unit is a screen-recorded demonstration; the checklist travels with it so the learner can follow at the pump.</p>
+      <h3 class="sm" style="margin-top:16px">Follow-along checklist</h3>
+      <ul class="clist">
+        <li><span class="bx"></span><div><b>Confirm order &amp; concentration</b><small>Right drug, right concentration, right line.</small></div></li>
+        <li><span class="bx"></span><div><b>Program the pump</b><small>Initial rate and dose limits per protocol.</small></div></li>
+        <li><span class="bx"></span><div><b>Set titration parameters</b><small>What you’re titrating to, and the step size.</small></div></li>
+        <li><span class="bx"></span><div><b>Monitoring in place</b><small>Continuous rhythm + BP; know the hold parameters.</small></div></li>
+        <li><span class="bx"></span><div><b>Independent double-check</b><small>Per your high-alert medication policy.</small></div></li>
+      </ul>
+    </div>`,
+    init(){}};
+ },
+ video8(u){
+   return {html:dhead(u)+`
+    <div class="body-card">
+      <h3 class="sm">Demonstration</h3>
+      <div class="media"><div class="play"></div><span class="tag">Screen-recorded demo</span><span class="dur">2:00</span></div>
+      <p class="dim" style="margin-top:12px">Synchronized cardioversion is a hands-and-sequence skill — the kind of thing a 60-second video beats a paragraph at every time.</p>
+      <h3 class="sm" style="margin-top:16px">Follow-along checklist</h3>
+      <ul class="clist">
+        <li><span class="bx"></span><div><b>SYNC mode ON</b><small>Confirm sync markers land on the R waves — the single most-missed step.</small></div></li>
+        <li><span class="bx"></span><div><b>Pad placement</b><small>Anterior-lateral or anterior-posterior per device.</small></div></li>
+        <li><span class="bx"></span><div><b>Sedation &amp; airway ready</b><small>Provider, sedation, and monitoring in place first.</small></div></li>
+        <li><span class="bx"></span><div><b>Energy per protocol</b><small>Confirm the selected energy, clear, deliver.</small></div></li>
+        <li><span class="bx"></span><div><b>Re-confirm sync between attempts</b><small>Many devices drop sync after a shock.</small></div></li>
+      </ul>
+    </div>`,
+    init(){}};
+ },
+
+ /* Unit 6 — micro-case */
+ microcase(u){
+   return {html:dhead(u)+`
+    <div class="body-card">
+      <div class="vignette"><div class="vl">Micro-case</div><p>EF 25%. New AF with RVR, stable. The team reaches for diltiazem. <b>Why should you pause?</b></p>
+      </div>
+      <p class="decision-q">Your read?</p>
+      <div class="opts" id="mc-opts"></div>
+      <div id="mc-fb"></div>
+    </div>`,
+    init(root){
+      const opts=[
+        {t:"Diltiazem’s negative inotropy can drop an already-low output — consider amiodarone per protocol",correct:true},
+        {t:"No concern — rate control is rate control",correct:false},
+        {t:"Cardiovert immediately regardless of stability",correct:false}
+      ];
+      const box=root.querySelector("#mc-opts");
+      box.innerHTML=opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="mk">${String.fromCharCode(65+i)}</span><span class="ot">${o.t}</span></button>`).join("");
+      box.querySelectorAll(".opt").forEach((btn,i)=>btn.onclick=()=>{
+        box.querySelectorAll(".opt").forEach((b,j)=>{b.disabled=true;if(opts[j].correct)b.classList.add("correct");else if(j===i)b.classList.add("wrong");else b.classList.add("muted");});
+        const ok=opts[i].correct;
+        root.querySelector("#mc-fb").innerHTML=`<div class="callout ${ok?"":"bad"}"><div class="ml">${ok?"Right":"Reconsider"}</div><p>A low-EF heart tolerates negative inotropes poorly — diltiazem and verapamil can worsen output. <b>Amiodarone is often the better rate-control choice here</b>, but confirm against your protocol. One micro-case, one decision rule, two minutes.</p></div>`;
+      });
+    }};
+ },
+
+ /* Unit 7 — nano card */
+ nano(u){
+   return {html:dhead(u)+`
+    <p class="body-card" style="font-size:13px;color:var(--dim);margin-top:14px">A nano card is the smallest unit there is — one decision point, read in a glance, at the bedside.</p>
+    <div class="body-card">
+      <h3 class="sm">Escalate when…</h3>
+      <ul class="clist">
+        <li><span class="bx" style="border-color:var(--red)"></span><div><b>Any instability develops</b><small>Hypotension, altered mentation, ischemic chest pain, acute heart failure.</small></div></li>
+        <li><span class="bx" style="border-color:var(--red)"></span><div><b>Rate won’t control</b><small>Despite electrolytes corrected and agent per protocol.</small></div></li>
+        <li><span class="bx" style="border-color:var(--red)"></span><div><b>New ischemia or hemodynamic decline</b><small>Trend, don’t wait for a single number.</small></div></li>
+      </ul>
+      <h3 class="sm" style="margin-top:14px">Who to call</h3>
+      <p>Your unit’s chain: <b>charge → covering provider → cardiology / CT surgery</b> per protocol.</p>
+      <div class="callout" style="margin-top:12px"><div class="ml">One-line SBAR</div><p>“POD-1 CABG, new AF RVR at 155, now <i>[instability]</i>, Mg/K corrected, <i>[agent]</i> given — need you at the bedside.”</p></div>
+    </div>`,
+    init(){}};
+ },
+
+ /* Unit 9 — checklist */
+ checklist9(u){
+   return {html:dhead(u)+`
+    <div class="body-card">
+      <h3 class="sm">First four hours after conversion</h3>
+      <ul class="clist">
+        <li><span class="bx"></span><div><b>Rhythm &amp; rate</b><small>Confirm sustained conversion; watch for recurrence.</small></div></li>
+        <li><span class="bx"></span><div><b>Blood pressure &amp; perfusion</b><small>Post-sedation and post-conversion hemodynamics.</small></div></li>
+        <li><span class="bx"></span><div><b>Mentation &amp; recovery</b><small>Return to baseline after sedation.</small></div></li>
+        <li><span class="bx"></span><div><b>Recurrence watch</b><small>Post-op AF frequently recurs — know the plan if it does.</small></div></li>
+        <li><span class="bx"></span><div><b>Anticoagulation plan</b><small>Confirmed with the team (see Unit 10).</small></div></li>
+        <li><span class="bx"></span><div><b>Telemetry continued</b><small>Per protocol for the monitoring window.</small></div></li>
+      </ul>
+    </div>`,
+    init(){}};
+ },
+
+ /* Unit 10 — audio */
+ audio(u){
+   return {html:dhead(u)+`
+    <div class="body-card">
+      <h3 class="sm">Listen — conceptual, commute-friendly</h3>
+      <div class="audio"><div class="play"></div><div class="track"><div class="wave"></div><div class="t"><span>1:02</span><span>3:00</span></div></div></div>
+      <p class="dim" style="margin-top:12px">No visual dependency → <b>audio</b>. The bleeding-vs-stroke tradeoff is a judgment to think through, not a picture to see.</p>
+      <h3 class="sm" style="margin-top:16px">What it covers</h3>
+      <ul class="clist">
+        <li><span class="bx"></span><div><b>The two risks in tension</b><small>Thromboembolic stroke vs. post-sternotomy bleeding — both real, both time-sensitive.</small></div></li>
+        <li><span class="bx"></span><div><b>Why post-op timing is its own problem</b><small>Fresh surgical bleeding risk shifts the usual calculus.</small></div></li>
+        <li><span class="bx"></span><div><b>It’s a team decision</b><small>Surgery + cardiology own the window; your job is to recognize it’s open and flag it.</small></div></li>
+      </ul>
+    </div>`,
+    init(){}};
+ }
+};
+
+/* ---------- retrieval flashcard demo (hub) ---------- */
+function flashDemo(){
+  const host=document.getElementById("flash");
+  const deck=[
+    {q:"New post-op AF with RVR, stable. What’s the reflex before rate-controlling?",opts:[{t:"Check & replace Mg and K",correct:true},{t:"Cardiovert",correct:false},{t:"Assign a module",correct:false}]},
+    {q:"Which finding makes AF with RVR unstable?",opts:[{t:"Ventricular rate of 150",correct:false},{t:"Hypotension with altered mentation",correct:true},{t:"Any post-op AF",correct:false}]}
+  ];
+  let idx=0,conf=null;
+  function draw(){
+    const c=deck[idx];conf=null;
+    host.innerHTML=`<div class="count">Item ${idx+1} of ${deck.length}</div>
+      <div class="fq">${c.q}</div>
+      <div class="conf" style="border-top:none;padding-top:0;margin-top:0">
+        <div class="q">How sure are you?</div>
+        <div class="confbtns">
+          <button class="cbtn" data-c="guess">Guessing</button>
+          <button class="cbtn" data-c="fair">Fairly sure</button>
+          <button class="cbtn" data-c="certain">Certain</button>
+        </div>
+      </div>
+      <div class="opts" id="f-opts" style="margin-top:14px"></div>
+      <div id="f-fb"></div>`;
+    host.querySelectorAll(".conf .cbtn").forEach(b=>b.onclick=()=>{conf=b.dataset.c;host.querySelectorAll(".conf .cbtn").forEach(x=>x.classList.toggle("sel",x===b));});
+    const ob=host.querySelector("#f-opts");
+    ob.innerHTML=c.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="mk">${String.fromCharCode(65+i)}</span><span class="ot">${o.t}</span></button>`).join("");
+    ob.querySelectorAll(".opt").forEach((btn,i)=>btn.onclick=()=>{
+      ob.querySelectorAll(".opt").forEach((b,j)=>{b.disabled=true;if(c.opts[j].correct)b.classList.add("correct");else if(j===i)b.classList.add("wrong");else b.classList.add("muted");});
+      const ok=c.opts[i].correct, confMiss=!ok&&conf==="certain";
+      const more=idx<deck.length-1?`<button class="reset" id="f-next">Next item →</button>`:`<button class="reset" id="f-next">↺ Restart</button>`;
+      let tag;
+      if(confMiss)tag=`<div class="resurface">↻ Confident miss — top of the resurface queue, appears <b>twice</b>.</div>`;
+      else if(ok&&conf==="certain")tag=`<div class="resurface" style="color:var(--dim)">✓ Confident + correct — spaced once, then retired.</div>`;
+      else tag=`<div class="resurface" style="color:var(--dim)">↻ Reappears once more this cycle.</div>`;
+      host.querySelector("#f-fb").innerHTML=`<div class="callout ${ok?"":(confMiss?"bad":"warn")}"><div class="ml">${ok?"Correct":"Miss"}</div><p>${ok?"Spacing and confidence decide when you see this again — not whether you ‘finished’ it.":"The targeting rule: a wrong answer you were <i>sure</i> about is the highest-yield thing to resurface."}</p>${tag}</div>${more}`;
+      host.querySelector("#f-next").onclick=()=>{idx=(idx+1)%deck.length;draw();};
+    });
+  }
+  draw();
+}
+
+/* ---------- reusable confidence-retrieval item ---------- */
+function recallItem(wrap,item,label){
+  let conf=null;
+  wrap.innerHTML=`<div class="count">${label}</div>
+    <div class="fq">${item.q}</div>
+    <div class="conf" style="border-top:none;padding-top:0;margin-top:0"><div class="q">How sure are you?</div>
+    <div class="confbtns">
+      <button class="cbtn" data-c="guess">Guessing</button>
+      <button class="cbtn" data-c="fair">Fairly sure</button>
+      <button class="cbtn" data-c="certain">Certain</button></div></div>
+    <div class="opts" style="margin-top:14px"></div><div class="rfb"></div>`;
+  wrap.querySelectorAll(".conf .cbtn").forEach(b=>b.onclick=()=>{conf=b.dataset.c;wrap.querySelectorAll(".conf .cbtn").forEach(x=>x.classList.toggle("sel",x===b));});
+  const ob=wrap.querySelector(".opts");
+  ob.innerHTML=item.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="mk">${String.fromCharCode(65+i)}</span><span class="ot">${o.t}</span></button>`).join("");
+  ob.querySelectorAll(".opt").forEach((btn,i)=>btn.onclick=()=>{
+    ob.querySelectorAll(".opt").forEach((b,j)=>{b.disabled=true;if(item.opts[j].correct)b.classList.add("correct");else if(j===i)b.classList.add("wrong");else b.classList.add("muted");});
+    const ok=item.opts[i].correct, miss=!ok&&conf==="certain";
+    let tag;
+    if(miss)tag=`<div class="resurface">↻ Confident miss — top of the resurface queue, appears <b>twice</b>.</div>`;
+    else if(ok&&conf==="certain")tag=`<div class="resurface" style="color:var(--dim)">✓ Confident + correct — spaced once, then retired.</div>`;
+    else tag=`<div class="resurface" style="color:var(--dim)">↻ Reappears once more this cycle.</div>`;
+    wrap.querySelector(".rfb").innerHTML=`<div class="callout ${ok?"":(miss?"bad":"warn")}"><div class="ml">${ok?"Correct":"Miss"}</div><p>${item.why}</p>${tag}</div>`;
+  });
+}
+
+/* ---------- stage builders ---------- */
+function buildWhy(paras){return el=>{el.innerHTML=`<p class="stageq">Why it matters</p><div class="why">${paras.map(p=>`<p>${p}</p>`).join("")}</div>`;};}
+function buildTLDR(text,adapt){return el=>{el.innerHTML=`<p class="stageq">TL;DR</p><div class="tldr"><div class="tl">The one takeaway</div><p>${text}</p><div class="adapt">${adapt}</div></div>`;};}
+function buildRecall(items){return el=>{el.innerHTML=`<p class="stageq">Recall — rate your confidence, then answer</p>`;items.forEach((it,k)=>{const w=document.createElement("div");w.className="flashwrap";w.style.marginTop=k?"12px":"0";el.appendChild(w);recallItem(w,it,`Item ${k+1} of ${items.length}`);});};}
+
+/* Unit 1 — identify + annotate */
+function buildU1Interact(el){
+  el.innerHTML=`<p class="stageq">Read the strip</p>
+    <div class="strip">${afStrip()}</div>
+    <div class="conf" id="u1c"><div class="q">First — how sure are you?</div>
+      <div class="confbtns">
+        <button class="cbtn" data-c="guess">Guessing</button>
+        <button class="cbtn" data-c="fair">Fairly sure</button>
+        <button class="cbtn" data-c="certain">Certain</button></div></div>
+    <p class="decision-q">What rhythm is this?</p>
+    <div class="opts" id="u1o"></div><div id="u1fb"></div>`;
+  let conf=null;
+  el.querySelectorAll("#u1c .cbtn").forEach(b=>b.onclick=()=>{conf=b.dataset.c;el.querySelectorAll("#u1c .cbtn").forEach(x=>x.classList.toggle("sel",x===b));});
+  const opts=[{t:"AF with RVR",correct:true},{t:"Atrial flutter with 2:1 conduction",correct:false},{t:"Multifocal atrial tachycardia (MAT)",correct:false},{t:"Sinus tach with frequent PACs",correct:false}];
+  const ob=el.querySelector("#u1o");
+  ob.innerHTML=opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="mk">${String.fromCharCode(65+i)}</span><span class="ot">${o.t}</span></button>`).join("");
+  ob.querySelectorAll(".opt").forEach((btn,i)=>btn.onclick=()=>{
+    ob.querySelectorAll(".opt").forEach((b,j)=>{b.disabled=true;if(opts[j].correct)b.classList.add("correct");else if(j===i)b.classList.add("wrong");else b.classList.add("muted");});
+    const ok=opts[i].correct, miss=!ok&&conf==="certain";
+    const annot=`<div class="annot"><div class="ah">What gives it away</div>
+      <div class="a"><span class="d"></span><div><b>Irregularly irregular</b> — the R-to-R spacing never settles into a pattern.</div></div>
+      <div class="a"><span class="d"></span><div><b>No organized P waves</b> — a fibrillatory baseline between QRS complexes, not discrete atrial beats.</div></div>
+      <div class="a"><span class="d"></span><div><b>Narrow QRS</b> at a <b>rapid rate (~150)</b> — conduction is normal; the atria are the problem.</div></div></div>`;
+    const tag=miss?`<div class="resurface">↻ Confident miss — flagged to resurface <b>twice</b>.</div>`:(ok&&conf==="certain"?`<div class="resurface" style="color:var(--dim)">✓ Confident + correct.</div>`:`<div class="resurface" style="color:var(--dim)">↻ Reappears once this cycle.</div>`);
+    el.querySelector("#u1fb").innerHTML=`<div class="callout ${ok?"":"bad"}"><div class="ml">${ok?"That’s it":"It’s AF with RVR"}</div><p>Against the look-alikes: flutter is <b>regular with sawtooth F-waves</b>; MAT shows <b>≥3 distinct P-wave shapes</b>; sinus-with-PACs keeps an underlying sinus P before most beats.</p>${tag}</div>${annot}`;
+  });
+}
+
+/* Unit 2 — expanded branching */
+function buildU2Interact(el){
+  el.innerHTML=`<div class="vignette"><div class="vl">The patient</div><p>POD-1 after CABG. New AF, ventricular rate <b>155</b>. BP <b>126/70</b>, awake and conversant, no chest pain, lungs clear, making urine.</p></div><div id="b2"></div>`;
+  const stage=el.querySelector("#b2");
+  const nodes={
+    start:{q:"By your unit’s instability criteria — stable or unstable?",opts:[
+      {t:"Stable",correct:true,go:"reflex"},
+      {t:"Unstable → prep for cardioversion",correct:false,go:"start",fb:{cls:"bad",ml:"Re-check the criteria",msg:"Instability means <b>hypotension, altered mentation, ischemic chest pain, or acute heart failure</b> — she has none. A rate of 155 is alarming but it isn’t a criterion. Calling this unstable treats the number, not the patient."}}]},
+    reflex:{pre:"You called it <b>stable</b> — so you have time to rate-control.",q:"Before you escalate or push a rate-control agent, what’s the reflex?",opts:[
+      {t:"Check & replace magnesium and potassium",correct:true,go:"titrate"},
+      {t:"Push IV diltiazem now",correct:false,go:"reflex",fb:{cls:"warn",ml:"Hold the reflex",msg:"Post-op AF rides on <b>low Mg and K</b>. Rate control over an uncorrected deficit underperforms and risks rebound. Replace to your unit’s post-op targets <i>first</i>, then rate-control per protocol."}}]},
+    titrate:{pre:"Mg and K repleted. Rate eases to <b>120</b> — still stable, but not at goal.",q:"Next move?",opts:[
+      {t:"Rate-control agent per protocol, then reassess",correct:true,go:"resolve"},
+      {t:"Nothing — she’s stable, leave it",correct:false,go:"titrate",fb:{cls:"warn",ml:"Not quite",msg:"Stable doesn’t mean done. A sustained rate of 120 still costs diastolic filling and myocardial oxygen — treat it per protocol and reassess, don’t just watch."}},
+      {t:"Cardiovert now",correct:false,go:"titrate",fb:{cls:"bad",ml:"Too far",msg:"She’s stable — cardioversion isn’t indicated. Rate control per protocol is the proportionate next step."}}]},
+    resolve:{pre:"Rate-control agent started per protocol; rate settles toward 95–100.",terminal:true,
+      fb:{cls:"",ml:"Resolved",msg:"Stable throughout → recognize, fix the electrolytes, rate-control per protocol, document, monitor."},
+      debrief:[
+        {ic:"ok",t:"<b>Stable path (this run):</b> criteria say stable → Mg/K → rate-control per protocol → reassess."},
+        {ic:"no",t:"<b>The branch you didn’t take:</b> if BP had dropped or she’d become altered or had ischemic chest pain at <i>any</i> point → that’s unstable → escalate / synchronized cardioversion."}
+      ]}
+  };
+  function draw(key){
+    const node=nodes[key];let h="";
+    if(node.pre)h+=`<p class="decision-q" style="font-weight:400;color:var(--slate);font-size:14px">${node.pre}</p>`;
+    if(node.terminal){
+      h+=`<div class="callout ${node.fb.cls}"><div class="ml">${node.fb.ml}</div><p>${node.fb.msg}</p></div>`;
+      h+=`<div class="debrief"><div class="dh">Debrief — both branches</div>`+node.debrief.map(d=>`<div class="path"><span class="ic ${d.ic}">${d.ic==="ok"?"✓":"✗"}</span><div>${d.t}</div></div>`).join("")+`</div>`;
+      h+=`<button class="reset" id="b2again">↺ Run it again</button>`;
+      stage.innerHTML=h;stage.querySelector("#b2again").onclick=()=>draw("start");return;
+    }
+    h+=`<p class="decision-q">${node.q}</p><div class="opts">`+node.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="mk">${String.fromCharCode(65+i)}</span><span class="ot">${o.t}</span></button>`).join("")+`</div><div id="b2fb"></div>`;
+    stage.innerHTML=h;
+    stage.querySelectorAll(".opt").forEach((btn,i)=>btn.onclick=()=>pick(key,i));
+  }
+  function pick(key,i){
+    const node=nodes[key],o=node.opts[i];
+    stage.querySelectorAll(".opt").forEach((btn,j)=>{btn.disabled=true;if(node.opts[j].correct)btn.classList.add("correct");else if(j===i)btn.classList.add("wrong");else btn.classList.add("muted");});
+    if(o.correct){stage.querySelector("#b2fb").innerHTML=`<div class="callout"><div class="ml">Good call</div><p>Advancing…</p></div>`;setTimeout(()=>draw(o.go),650);}
+    else{stage.querySelector("#b2fb").innerHTML=`<div class="callout ${o.fb.cls}"><div class="ml">${o.fb.ml}</div><p>${o.fb.msg}</p></div><button class="reset" id="b2retry">↺ Decide again</button>`;stage.querySelector("#b2retry").onclick=()=>draw(o.go);}
+  }
+  draw("start");
+}
+
+/* Unit 3 — One Minute Wonder */
+function buildOMW(el){
+  el.innerHTML=`<p class="stageq">The element — a one-minute wonder</p>
+  <div class="omw">
+    <div class="bar"><span>One Minute Wonder</span><span>60 sec</span></div>
+    <div class="in">
+      <h3>Before you escalate: Mg &amp; K</h3>
+      <div class="sub">New post-op AF with RVR? Fix the floor first.</div>
+      <div class="seg"><div class="sl">Why</div><div class="sv">Post-op AF rides on low magnesium and potassium. Correct them and rate control works — skip them and it won’t.</div></div>
+      <div class="seg"><div class="sl">When</div><div class="sv">The moment you see new post-op AF — <b>before</b> you escalate or push a rate agent.</div></div>
+      <div class="seg"><div class="sl">Do</div><div class="sv">Check Mg &amp; K → replace to your unit’s post-op targets → <i>then</i> rate-control per protocol.</div></div>
+    </div>
+  </div>
+  <p class="dim" style="margin-top:12px;font-size:13px">Posted where the decision happens — the med room. One objective, one reflex, no login, no module.</p>`;
+}
+
+/* Unit 4 — interactive job aid */
+function buildJobaidInteract(el){
+  el.innerHTML=`<div class="callout warn"><div class="ml">Performance support — not a lesson</div><p>A job aid answers the question <i>in the moment</i>. If you also need the knowledge durable, pair it with the retrieval unit — don’t pretend the job aid taught it.</p></div>
+  <p class="decision-q">At the pump — what’s this patient’s EF?</p>
+  <div class="opts" id="jao"></div><div id="jaf"></div>`;
+  const opts=[{t:"Preserved EF",k:"pres"},{t:"Reduced EF (low systolic function)",k:"red"}];
+  const ob=el.querySelector("#jao");
+  ob.innerHTML=opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="mk">${i+1}</span><span class="ot">${o.t}</span></button>`).join("");
+  ob.querySelectorAll(".opt").forEach((btn,i)=>btn.onclick=()=>{
+    ob.querySelectorAll(".opt").forEach((b,j)=>{b.disabled=true;if(j!==i)b.classList.add("muted");});
+    ob.querySelectorAll(".opt")[i].classList.add("correct");
+    const red=opts[i].k==="red";
+    el.querySelector("#jaf").innerHTML=`<div class="callout"><div class="ml">${red?"Reduced EF":"Preserved EF"}</div><p>${red?"Avoid negative inotropes — diltiazem and verapamil can worsen output. <b>Amiodarone is often preferred</b> for rate control here. Confirm against your protocol.":"Beta-blocker or diltiazem per protocol — rate control is the goal. Confirm dose and contraindications against your protocol."}</p></div>
+    <div class="annot"><div class="ah">The whole decision, one glance</div>
+      <div class="a"><span class="d"></span><div><b>Preserved EF</b> → beta-blocker or diltiazem per protocol.</div></div>
+      <div class="a"><span class="d" style="background:var(--blue)"></span><div><b>Reduced EF</b> → avoid negative inotropes; amiodarone often preferred.</div></div>
+      <div class="a"><span class="d" style="background:var(--amber)"></span><div><b>Unsure / outside criteria</b> → stop and escalate (Unit 7); don’t guess at the pump.</div></div></div>`;
+  });
+}
+
+/* Units 5 & 8 — annotated video stand-in + checklist */
+function buildVideoSeq(frames,checklist){
+  return el=>{
+    el.innerHTML=`<p class="stageq">The element — a screen-recorded demonstration</p>
+    <p class="dim" style="font-size:13px;margin-bottom:12px">Anything with hands → show it, don’t describe it. These annotated frames stand in for the real screen-recording; the checklist travels with it.</p>
+    <div style="display:grid;gap:10px">`+
+    frames.map((f,i)=>`<div style="display:grid;grid-template-columns:110px 1fr;gap:13px;align-items:center">
+      <div class="media" style="aspect-ratio:4/3;border-radius:var(--r)"><span style="color:#8aa0b0;font-size:10px;font-weight:700;letter-spacing:.08em">FRAME ${i+1}</span><span class="dur" style="right:6px;bottom:6px">${f.t}</span></div>
+      <div style="font-size:13.5px;color:var(--ink);line-height:1.4"><b>${f.h}</b><br><span style="color:var(--slate)">${f.c}</span></div></div>`).join("")+
+    `</div>
+    <p class="stageq" style="margin:18px 0 4px">Follow-along checklist</p>
+    <ul class="clist">`+checklist.map(c=>`<li><span class="bx"></span><div><b>${c.h}</b><small>${c.s}</small></div></li>`).join("")+`</ul>`;
+  };
+}
+
+/* Unit 6 — micro-case */
+function buildMicrocase(el){
+  el.innerHTML=`<div class="vignette"><div class="vl">Micro-case</div><p>EF 25%. New AF with RVR, stable. The team reaches for diltiazem. <b>Why should you pause?</b></p></div>
+  <p class="decision-q">Your read?</p><div class="opts" id="mco"></div><div id="mcf"></div>`;
+  const opts=[{t:"Diltiazem’s negative inotropy can drop an already-low output — consider amiodarone per protocol",correct:true},{t:"No concern — rate control is rate control",correct:false},{t:"Cardiovert immediately regardless of stability",correct:false}];
+  const ob=el.querySelector("#mco");
+  ob.innerHTML=opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="mk">${String.fromCharCode(65+i)}</span><span class="ot">${o.t}</span></button>`).join("");
+  ob.querySelectorAll(".opt").forEach((btn,i)=>btn.onclick=()=>{
+    ob.querySelectorAll(".opt").forEach((b,j)=>{b.disabled=true;if(opts[j].correct)b.classList.add("correct");else if(j===i)b.classList.add("wrong");else b.classList.add("muted");});
+    const ok=opts[i].correct;
+    el.querySelector("#mcf").innerHTML=`<div class="callout ${ok?"":"bad"}"><div class="ml">${ok?"Right":"Reconsider"}</div><p>A low-EF heart tolerates negative inotropes poorly — diltiazem and verapamil can worsen an already-reduced output. <b>Amiodarone is often the better rate-control choice here</b> — confirm against your protocol. One micro-case, one decision rule.</p></div>`;
+  });
+}
+
+/* Unit 7 — nano card */
+function buildNanoCard(el){
+  el.innerHTML=`<p class="stageq">The element — a nano card</p>
+  <div class="body-card" style="margin-top:0">
+    <p class="stageq" style="color:var(--primary)">Escalate when…</p>
+    <ul class="clist">
+      <li><span class="bx" style="border-color:var(--red)"></span><div><b>Any instability develops</b><small>Hypotension, altered mentation, ischemic chest pain, acute heart failure.</small></div></li>
+      <li><span class="bx" style="border-color:var(--red)"></span><div><b>Rate won’t control</b><small>Despite electrolytes corrected and agent per protocol.</small></div></li>
+      <li><span class="bx" style="border-color:var(--red)"></span><div><b>New ischemia or hemodynamic decline</b><small>Trend it — don’t wait for a single number.</small></div></li>
+    </ul>
+    <p class="stageq" style="color:var(--primary);margin-top:14px">Who to call</p>
+    <p style="font-size:14px;margin:0">Your unit’s chain: <b>charge → covering provider → cardiology / CT surgery</b> per protocol.</p>
+    <div class="callout" style="margin-top:12px"><div class="ml">One-line SBAR</div><p>“POD-1 CABG, new AF RVR at 155, now <i>[instability]</i>, Mg/K corrected, <i>[agent]</i> given — need you at the bedside.”</p></div>
+  </div>`;
+}
+
+/* Unit 9 — interactive checklist */
+function buildChecklistInteract(el){
+  const items=[
+    {h:"Rhythm &amp; rate",s:"Confirm sustained conversion; watch for recurrence."},
+    {h:"Blood pressure &amp; perfusion",s:"Post-sedation and post-conversion hemodynamics."},
+    {h:"Mentation &amp; recovery",s:"Return to baseline after sedation."},
+    {h:"Recurrence watch",s:"Post-op AF frequently recurs — know the plan if it does."},
+    {h:"Anticoagulation plan",s:"Confirmed with the team (see Unit 10)."},
+    {h:"Telemetry continued",s:"Per protocol for the monitoring window."}
+  ];
+  el.innerHTML=`<p class="stageq">The element — a point-of-care checklist</p>
+  <p class="dim" style="font-size:13px;margin-bottom:10px">Tap each as you clear it. First four hours after conversion.</p>
+  <ul class="clist ckmode" id="ckl">`+items.map((c,i)=>`<li data-i="${i}"><span class="bx"></span><div><b>${c.h}</b><small>${c.s}</small></div></li>`).join("")+`</ul>
+  <div class="callout" id="ckprog" style="margin-top:12px"><div class="ml">Progress</div><p><b id="ckn">0</b> of ${items.length} cleared.</p></div>`;
+  let done=0;
+  el.querySelectorAll("#ckl li").forEach(li=>li.onclick=()=>{
+    li.classList.toggle("ck");done=el.querySelectorAll("#ckl li.ck").length;
+    const cal=el.querySelector("#ckprog");
+    cal.className="callout"+(done===items.length?"":" warn");
+    cal.querySelector("p").innerHTML=done===items.length?"All six cleared — monitoring window covered.":`<b>${done}</b> of ${items.length} cleared.`;
+  });
+}
+
+/* Unit 10 — audio + transcript */
+function buildAudioTranscript(el){
+  el.innerHTML=`<p class="stageq">The element — audio, for conceptual content</p>
+  <div class="audio"><div class="play"></div><div class="track"><div class="wave"></div><div class="t"><span>0:00</span><span>3:00</span></div></div></div>
+  <p class="dim" style="margin-top:12px;font-size:13px">No visual dependency → audio. The bleeding-versus-stroke tradeoff is a judgment to think through, not a picture to see — made for the commute.</p>
+  <p class="stageq" style="margin-top:16px">Transcript</p>
+  <div class="body-card" style="margin-top:0">
+    <p style="font-size:14px;margin:0 0 9px">After post-op AF, two risks sit in tension. The arrhythmia raises the risk of a thromboembolic stroke, which argues for anticoagulation. But your patient is fresh from a sternotomy, where bleeding risk is real and immediate — which argues against it.</p>
+    <p style="font-size:14px;margin:0 0 9px">That’s why the post-op window is its own problem, not just a smaller version of the outpatient decision: the usual “anticoagulate for AF” reflex runs straight into a surgical bleeding risk that shifts the whole calculus.</p>
+    <p style="font-size:14px;margin:0">So this isn’t a bedside call you make alone. Surgery and cardiology own the timing and the agent. Your job is to <b>recognize that the window is open</b>, flag it, and make sure the plan is explicit rather than assumed.</p>
+  </div>`;
+}
+
+/* ---------- staged unit definitions ---------- */
+const STAGEDEF={
+ u1:{stages:[
+   {label:"Why",build:buildWhy([
+     "The first look at the monitor sets up the next ten minutes. Mislabel the rhythm and every downstream choice inherits the error — rate-controlling something that isn’t AF, or missing instability in something that is.",
+     "This is pure recognition: one skill, one moment, before anything else happens. It’s the smallest possible unit — and exactly the kind that belongs in a 90-second retrieval card, not a 12-minute module."])},
+   {label:"Read it",build:buildU1Interact},
+   {label:"Recall",build:buildRecall([
+     {q:"Irregularly irregular, no P waves, narrow QRS at ~150 — rhythm?",opts:[{t:"AF with RVR",correct:true},{t:"Atrial flutter",correct:false},{t:"VT",correct:false}],why:"Irregularly irregular + absent P waves + narrow QRS is AF with RVR. Flutter is regular; VT is wide."},
+     {q:"Which single feature best separates AF from atrial flutter on the monitor?",opts:[{t:"Irregular R-R with no organized atrial activity",correct:true},{t:"A fast rate",correct:false},{t:"A narrow QRS",correct:false}],why:"Both can be fast and narrow. It’s the <b>irregularity and the absent/ chaotic atrial activity</b> (no sawtooth) that calls AF."}])},
+   {label:"TL;DR",build:buildTLDR(
+     "AF with RVR = irregularly irregular + no P waves + narrow QRS. Confirm recognition <i>before</i> you reach for a rate-control agent.",
+     "Your unit’s criteria define what counts as “unstable” — that’s the next unit.")}
+ ]},
+ u2:{stages:[
+   {label:"Why",build:buildWhy([
+     "A rate of 155 is frightening, but the number doesn’t decide the plan — the patient does. The instability criteria are the line between “rate-control at the bedside” and “call for cardioversion.”",
+     "Two minutes, one decision, before you escalate. Bounded judgment with a right answer → a branching scenario, not a lecture."])},
+   {label:"Decide",build:buildU2Interact},
+   {label:"Recall",build:buildRecall([
+     {q:"Which finding makes AF with RVR unstable?",opts:[{t:"Hypotension with altered mentation",correct:true},{t:"A ventricular rate of 150",correct:false},{t:"Any new post-op AF",correct:false}],why:"Instability = hypotension, altered mentation, ischemic chest pain, or acute heart failure — not a fast rate on its own."},
+     {q:"Stable new post-op AF — the reflex before escalating or pushing a rate agent?",opts:[{t:"Check & replace Mg and K",correct:true},{t:"Cardiovert",correct:false},{t:"Assign a module",correct:false}],why:"Post-op AF rides on low Mg/K. Correct them to your unit’s targets first, then rate-control per protocol."}])},
+   {label:"TL;DR",build:buildTLDR(
+     "“Unstable” = hypotension, altered mentation, ischemic chest pain, or acute heart failure — not a scary rate. Stable → fix Mg/K, then rate-control per protocol. Unstable → escalate / cardiovert.",
+     "Use your own unit’s instability criteria and agent protocol — the decision structure is what transfers.")}
+ ]},
+ u3:{stages:[
+   {label:"Why",build:buildWhy([
+     "Post-op AF is driven and sustained by low magnesium and potassium. Push rate control over an uncorrected deficit and it underperforms — the fix that should come first gets skipped in the rush to the pump.",
+     "One reflex, at one moment, posted where the decision happens. That’s a one-minute wonder, not a module."])},
+   {label:"The card",build:buildOMW},
+   {label:"Recall",build:buildRecall([
+     {q:"Stable new post-op AF with RVR — the first reflex?",opts:[{t:"Check & replace Mg and K",correct:true},{t:"Push a rate agent",correct:false},{t:"Cardiovert",correct:false}],why:"Correct the electrolyte floor to your unit’s post-op targets first; then rate-control per protocol."},
+     {q:"Why do Mg and K matter so much here?",opts:[{t:"They drive/sustain post-op AF and blunt rate control when low",correct:true},{t:"They’re unrelated — just routine labs",correct:false}],why:"Low Mg/K both promote the arrhythmia and undercut rate control, so they’re the pre-escalation fix."}])},
+   {label:"TL;DR",build:buildTLDR("New post-op AF? Check and replace Mg and K before you escalate or push a rate agent.","Use your unit’s post-op electrolyte targets.")}
+ ]},
+ u4:{stages:[
+   {label:"Why",build:buildWhy([
+     "At the pump, the question isn’t “what do I know about rate control” — it’s “which agent, for <i>this</i> patient, right now.” That’s performance support: answer the question in the moment so no one has to have memorized it.",
+     "A job aid isn’t a learning unit. It lives at the point of decision and pairs with a retrieval unit if the knowledge also needs to stick."])},
+   {label:"At the pump",build:buildJobaidInteract},
+   {label:"Recall",build:buildRecall([
+     {q:"Low-EF patient, new AF with RVR — which rate agent gives pause?",opts:[{t:"Diltiazem — negative inotropy",correct:true},{t:"Amiodarone",correct:false},{t:"None — EF is irrelevant",correct:false}],why:"Diltiazem/verapamil are negative inotropes; in low EF they can worsen output. Amiodarone is often preferred — per protocol."},
+     {q:"A QR job aid at the pump is best described as…",opts:[{t:"Performance support — not a learning unit",correct:true},{t:"A complete microlearning unit on its own",correct:false}],why:"It answers the question in the moment. Pair it with retrieval if you need the knowledge durable."}])},
+   {label:"TL;DR",build:buildTLDR("Match the rate agent to the patient — preserved EF: beta-blocker/diltiazem; reduced EF: avoid negative inotropes, amiodarone often preferred. It’s support, not a lesson.","Every agent and dose per your own protocol.")}
+ ]},
+ u5:{stages:[
+   {label:"Why",build:buildWhy([
+     "Setting up and titrating an antiarrhythmic infusion is a hands-and-sequence skill. A paragraph can’t show where the line goes, what the pump should read, or how you titrate — a 60-to-90-second demonstration can.",
+     "Show it, don’t describe it. The checklist rides along so the learner can follow at the pump."])},
+   {label:"Watch",build:buildVideoSeq(
+     [{t:"0:12",h:"Confirm the order & concentration",c:"Right drug, right concentration, right line — before anything is programmed."},
+      {t:"0:40",h:"Program the pump",c:"Initial rate and dose limits per protocol; the demo shows the exact screens."},
+      {t:"1:20",h:"Titrate & monitor",c:"What you’re titrating to, the step size, and the hold parameters on continuous rhythm + BP."}],
+     [{h:"Confirm order & concentration",s:"Right drug, right concentration, right line."},
+      {h:"Program the pump",s:"Initial rate and dose limits per protocol."},
+      {h:"Set titration parameters",s:"What you’re titrating to, and the step size."},
+      {h:"Monitoring in place",s:"Continuous rhythm + BP; know the hold parameters."},
+      {h:"Independent double-check",s:"Per your high-alert medication policy."}])},
+   {label:"Recall",build:buildRecall([
+     {q:"Why is video the right form for infusion setup?",opts:[{t:"It’s a hands skill — show the sequence, don’t describe it",correct:true},{t:"Video is always best",correct:false}],why:"Form follows the objective: procedural, hands-on content is shown, not read."},
+     {q:"Before a high-alert antiarrhythmic infusion runs, what’s the safety backstop?",opts:[{t:"Independent double-check per policy",correct:true},{t:"Nothing — just start it",correct:false}],why:"High-alert meds get an independent double-check per your policy."}])},
+   {label:"TL;DR",build:buildTLDR("For a hands-on setup, a short demonstration beats any paragraph — and the checklist travels with it to the pump.","Pump settings, limits, and the double-check follow your own high-alert policy.")}
+ ]},
+ u6:{stages:[
+   {label:"Why",build:buildWhy([
+     "Most rate-control teaching assumes a normal heart. The low-EF patient is the exception that catches people — the reflexive agent can make things worse.",
+     "One decision rule, one short case. A micro-case, not a lecture on heart failure."])},
+   {label:"The case",build:buildMicrocase},
+   {label:"Recall",build:buildRecall([
+     {q:"Why avoid diltiazem in a low-EF patient with AF RVR?",opts:[{t:"Negative inotropy can worsen an already-reduced output",correct:true},{t:"It’s too slow to work",correct:false},{t:"It raises potassium",correct:false}],why:"Non-dihydropyridine calcium channel blockers are negative inotropes — a problem when systolic function is already poor."},
+     {q:"Often-preferred rate agent when EF is low?",opts:[{t:"Amiodarone (per protocol)",correct:true},{t:"Verapamil",correct:false}],why:"Amiodarone is commonly preferred for rate control in low EF — always confirm against your protocol."}])},
+   {label:"TL;DR",build:buildTLDR("Low EF changes the choice: avoid negative inotropes; amiodarone is often preferred for rate control.","Confirm the agent against your own protocol and the patient’s full picture.")}
+ ]},
+ u7:{stages:[
+   {label:"Why",build:buildWhy([
+     "Escalation fails in two directions — too late (missed instability) and too vague (“the patient’s in AF” tells the provider nothing). The fix is a clear trigger and a clear hand-off.",
+     "One decision point, read at a glance. The smallest unit there is — a nano card."])},
+   {label:"The card",build:buildNanoCard},
+   {label:"Recall",build:buildRecall([
+     {q:"Escalate AF with RVR when…",opts:[{t:"Instability develops, rate won’t control, or new ischemia",correct:true},{t:"The rate is above 100",correct:false},{t:"Only if the patient asks",correct:false}],why:"Trigger on instability, failure to control despite protocol, or new ischemia/decline — trend it, don’t wait for one number."},
+     {q:"A good escalation hands off…",opts:[{t:"The situation and what you’ve already done (SBAR)",correct:true},{t:"Just “the patient’s in AF”",correct:false}],why:"Name the situation, the trajectory, and the steps already taken so the provider can act."}])},
+   {label:"TL;DR",build:buildTLDR("Escalate on instability, uncontrolled rate, or new ischemia — and hand off with a one-line SBAR, not just “they’re in AF.”","Use your unit’s escalation chain and criteria.")}
+ ]},
+ u8:{stages:[
+   {label:"Why",build:buildWhy([
+     "Synchronized cardioversion is a sequence where one missed setting — SYNC off — turns a treatment into a hazard. It’s the definition of a procedure you show, not tell.",
+     "A short demonstration makes the steps and the order unmistakable."])},
+   {label:"Watch",build:buildVideoSeq(
+     [{t:"0:08",h:"SYNC mode ON",c:"Confirm sync markers land on the R waves — the single most-missed step."},
+      {t:"0:30",h:"Pads & sedation",c:"Pad placement per device; provider, sedation, and airway ready first."},
+      {t:"1:05",h:"Deliver & re-confirm",c:"Energy per protocol, clear, deliver — then re-confirm sync before any repeat."}],
+     [{h:"SYNC mode ON",s:"Confirm sync markers on the R waves."},
+      {h:"Pad placement",s:"Anterior-lateral or anterior-posterior per device."},
+      {h:"Sedation & airway ready",s:"Provider, sedation, and monitoring in place first."},
+      {h:"Energy per protocol",s:"Confirm selected energy, clear, deliver."},
+      {h:"Re-confirm sync between attempts",s:"Many devices drop sync after a shock."}])},
+   {label:"Recall",build:buildRecall([
+     {q:"The single most-missed step in synchronized cardioversion?",opts:[{t:"Confirming SYNC is ON",correct:true},{t:"Choosing the energy",correct:false},{t:"Charging the device",correct:false}],why:"Without sync, a shock can land on the T wave. Confirm sync markers on the R waves."},
+     {q:"After a shock, before a repeat attempt, you should…",opts:[{t:"Re-confirm sync",correct:true},{t:"Assume it’s still on",correct:false}],why:"Many devices drop sync after a shock — re-confirm every time."}])},
+   {label:"TL;DR",build:buildTLDR("Synchronized cardioversion lives or dies on SYNC — confirm it’s on, and re-confirm between attempts.","Pads, energy, and sedation per your own protocol.")}
+ ]},
+ u9:{stages:[
+   {label:"Why",build:buildWhy([
+     "The work isn’t over at conversion — the next four hours decide whether it holds. Post-op AF recurs, and the monitoring is where recurrence gets caught early.",
+     "A short, tickable checklist at the point of care — not a lecture on post-arrhythmia care."])},
+   {label:"Check",build:buildChecklistInteract},
+   {label:"Recall",build:buildRecall([
+     {q:"After conversion of post-op AF, you should expect that it…",opts:[{t:"May recur — have a plan",correct:true},{t:"Is permanently resolved",correct:false}],why:"Post-op AF frequently recurs; the monitoring window exists to catch it."},
+     {q:"The anticoagulation plan after conversion should be…",opts:[{t:"Explicit and confirmed with the team",correct:true},{t:"Assumed",correct:false}],why:"Make the plan explicit — it’s a team decision (see Unit 10), not an assumption."}])},
+   {label:"TL;DR",build:buildTLDR("Conversion isn’t the finish line — watch the first four hours for recurrence, hemodynamics, and a confirmed anticoagulation plan.","Monitoring window and telemetry duration per your protocol.")}
+ ]},
+ u10:{stages:[
+   {label:"Why",build:buildWhy([
+     "The anticoagulation decision after post-op AF is conceptual and conflicted — stroke risk versus fresh surgical bleeding — with no picture to look at. That’s exactly what audio does well.",
+     "Think-it-through content, built for the commute. The unit’s job is recognition and hand-off, not a bedside order."])},
+   {label:"Listen",build:buildAudioTranscript},
+   {label:"Recall",build:buildRecall([
+     {q:"The two risks in tension after post-op AF?",opts:[{t:"Thromboembolic stroke vs. post-sternotomy bleeding",correct:true},{t:"Hypotension vs. hypertension",correct:false}],why:"AF raises stroke risk (argues for anticoagulation); fresh sternotomy raises bleeding risk (argues against). That tension is the whole decision."},
+     {q:"Who owns the anticoagulation-window decision?",opts:[{t:"Surgery + cardiology — a team call; you recognize and flag it",correct:true},{t:"The bedside nurse, alone",correct:false}],why:"Your job is to recognize the window is open and make sure the plan is explicit — the timing and agent are a team decision."}])},
+   {label:"TL;DR",build:buildTLDR("Post-op anticoagulation is stroke risk vs. fresh bleeding — a team decision. Recognize the window is open and flag it; don’t assume the plan.","Timing and agent per surgery/cardiology and your protocol.")}
+ ]}
+};
+
+/* ---------- evidence & measure stage (appended to every unit) ---------- */
+function buildEvidence(c){return el=>{
+  el.innerHTML=`<p class="stageq">Evidence &amp; measure</p>
+    <div class="evid"><div class="eh">What grounds this unit</div>`+
+    c.evidence.map(e=>`<div class="erow"><span class="ek">${e.k}</span><span class="ev">${e.v}</span></div>`).join("")+
+    `</div>
+    <div class="callout" style="margin-top:12px"><div class="ml">Clinical pearl</div><p>${c.pearl}</p></div>
+    <div class="measure"><div class="mh">How we’d know it worked</div><p>${c.measure}</p></div>`;
+};}
+const EVID={
+ u1:{evidence:[{k:"Retrieval practice",v:"Testing effect — retrieval beats re-reading"},{k:"Price et al. 2025",v:"Double exposure > single; resurface confident misses"}],pearl:"The fastest way to de-risk the whole AF response is to make sure the rhythm is named right — everything downstream inherits that first read.",measure:"Micro-eval: one item before, one after (Kirkpatrick L2; Bannister 2020). Practice metric (L3): proportion of new irregular rhythms correctly identified on monitor audit."},
+ u2:{evidence:[{k:"Scenario-based decision",v:"Bounded judgment with immediate feedback"},{k:"Mayer 2021 — Coherence",v:"Strip the extraneous; one decision at a time"}],pearl:"The number on the monitor is the loudest thing in the room and the least useful — anchor the decision to the criteria, not the rate.",measure:"L2 pre/post item. L3: time from AF onset to first appropriate action; proportion of stable cases where Mg/K checked before escalation."},
+ u3:{evidence:[{k:"Just-in-time support",v:"Knowledge delivered at the point of decision"},{k:"Spacing",v:"The reflex rehearsed where it’s used"}],pearl:"Low Mg/K is the quiet reason rate control ‘isn’t working’ — fix the floor and the agent does its job.",measure:"L3: proportion of post-op AF events where Mg and K were checked before escalation — the single highest-yield metric in the worked example."},
+ u4:{evidence:[{k:"Performance support",v:"Answering in the moment is not learning"},{k:"Cognitive load",v:"Offload the lookup, keep the judgment"}],pearl:"EF is the hinge: the ‘obvious’ rate agent is the wrong one in the failing heart.",measure:"Usage + error audit at the pump; pair with a retrieval unit if durable recall is the goal."},
+ u5:{evidence:[{k:"Multimedia principle",v:"Show the hands (Mayer 2021)"},{k:"Segmenting",v:"Steps in order, learner-paced"}],pearl:"The infusion errors that matter happen at setup, not titration — the first 60 seconds are the ones worth filming.",measure:"Return demonstration / competency check; L3: infusion setup error rate."},
+ u6:{evidence:[{k:"Worked example",v:"One rule, one short case"},{k:"Pre-training",v:"The exception taught before it’s needed"}],pearl:"Negative inotropy is the whole lesson — amiodarone exists for exactly this patient.",measure:"L2 pre/post item on the low-EF decision rule."},
+ u7:{evidence:[{k:"Cognitive aid",v:"One trigger, one hand-off"},{k:"Load reduction",v:"Decide, don’t deliberate"}],pearl:"Most escalation failures are communication failures — the SBAR line is the unit, not the criteria.",measure:"L3: time-to-escalation; proportion of escalations with a complete SBAR hand-off."},
+ u8:{evidence:[{k:"Multimedia principle",v:"Procedure shown, not told"},{k:"Segmenting",v:"Sequence, learner-paced"}],pearl:"Sync-off is the error that turns therapy into harm — it earns a unit of its own.",measure:"Return demo; L3: SYNC-confirmed compliance on observed cardioversions."},
+ u9:{evidence:[{k:"Checklist / cognitive aid",v:"Reduces omission under load"},{k:"Spacing",v:"Surfaced at the moment of use"}],pearl:"Post-op AF recurs — the four-hour window is where the save happens, if anyone’s watching for it.",measure:"L3: post-conversion monitoring completeness; recurrence caught within the window."},
+ u10:{evidence:[{k:"Modality fit",v:"Conceptual content → audio (coherence)"},{k:"Context",v:"Thinking content, no visual dependency"}],pearl:"The post-sternotomy window is not the outpatient decision — the reflex is the trap.",measure:"L2 concept item; confirm the anticoagulation plan is explicit on chart review."}
+};
+Object.keys(EVID).forEach(id=>{ if(STAGEDEF[id]) STAGEDEF[id].stages.push({label:"Evidence",build:buildEvidence(EVID[id])}); });
+
+function openStaged(id){
+  const u=UNITS[id],def=STAGEDEF[id];let i=0;
+  dbody.innerHTML=dhead(u,u.jobaid?"jobaid":"")+
+    `<div class="stagerail" id="srail"></div><div id="sview" class="stageview"></div>
+     <div class="srnav"><button class="prev" id="sprev">← Back</button><button class="next" id="snext">Next →</button></div>`;
+  const rail=dbody.querySelector("#srail"),view=dbody.querySelector("#sview"),prev=dbody.querySelector("#sprev"),next=dbody.querySelector("#snext");
+  function draw(){
+    rail.innerHTML=def.stages.map((s,j)=>`<div class="s ${j===i?"active":(j<i?"done":"")}">${s.label}</div>`).join("");
+    view.innerHTML="";def.stages[i].build(view);
+    prev.disabled=i===0;
+    const last=i===def.stages.length-1;
+    next.textContent=last?"✓ Back to all elements":"Next →";next.classList.toggle("done-cta",last);
+  }
+  prev.onclick=()=>{if(i>0){i--;draw();detail.scrollIntoView&&window.scrollTo(0,0);}};
+  next.onclick=()=>{if(i<def.stages.length-1){i++;draw();window.scrollTo(0,0);}else closeUnit();};
+  hub.style.display="none";detail.classList.add("on");window.scrollTo(0,0);
+  try{history.pushState({id},"",location.pathname);}catch(e){}
+  draw();
+}
+
+/* ---------- old-way module (the anti-pattern) ---------- */
+function openBadModule(){
+  const heart=`<svg class="bmheart" viewBox="0 0 32 32"><path d="M16 29C16 29 3 21 3 12C3 7.6 6.6 4 11 4C13.4 4 15 5.4 16 7C17 5.4 18.6 4 21 4C25.4 4 29 7.6 29 12C29 21 16 29 16 29Z" fill="#c0392b" stroke="#7a1f16" stroke-width="1"/></svg>`;
+  const DWELL=3;
+  const narr=t=>`<div class="bmnarr"><span class="bmnl">▶ NARRATION</span><i>${t}</i></div>`;
+  const testQs=[
+    {q:"On the monitor, atrial fibrillation appears as…",opts:["A regular narrow-complex tachycardia","An irregularly irregular rhythm with no discernible P waves","A wide-complex regular rhythm","Organized sawtooth flutter waves"],c:1},
+    {q:"Which finding indicates the patient is UNSTABLE?",opts:["A ventricular rate of 150","Hypotension with altered mentation","Any post-operative atrial fibrillation","A normal blood pressure"],c:1},
+    {q:"Before escalating a stable post-op patient in AF, check and replace…",opts:["Sodium and chloride","Magnesium and potassium","Calcium and phosphate","Nothing"],c:1},
+    {q:"In reduced ejection fraction, which class warrants particular caution?",opts:["Amiodarone","Non-dihydropyridine calcium channel blockers","Magnesium","Potassium"],c:1},
+    {q:"Synchronized cardioversion requires…",opts:["Synchronization to the R wave","Maximum energy on the first attempt","No sedation","Asynchronous delivery"],c:0}
+  ];
+  const screens=[
+    {k:"cover"},{k:"info"},{k:"obj"},{k:"test",which:"pre"},
+    {k:"content",h:"Pathophysiology (1 of 2)",body:`<p>Atrial fibrillation is a supraventricular tachyarrhythmia characterized by uncoordinated atrial activation with consequent deterioration of atrial mechanical function. On the surface electrocardiogram, consistent P waves are replaced by rapid fibrillatory waves that vary in amplitude, shape, and timing, associated with an irregular — and frequently rapid — ventricular response when atrioventricular conduction is intact.</p><p>The arrhythmia is thought to be initiated and maintained by rapidly firing ectopic foci, commonly located within the pulmonary veins, in combination with multiple re-entrant wavelets propagating through a heterogeneous atrial substrate.</p>`,n:"In this section, we will discuss the underlying pathophysiology of atrial fibrillation. Please review each point carefully before proceeding to the next screen."},
+    {k:"content",h:"Pathophysiology (2 of 2): Post-operative Precipitants",body:`<p>In the post-operative cardiac surgical patient, a constellation of factors lowers the threshold for the initiation and maintenance of the arrhythmia during the first several post-operative days. These include pericardial inflammation, elevated sympathetic tone, intravascular volume shifts, hypoxemia, pain, and derangement of serum electrolytes — particularly magnesium and potassium.</p><p>The ventricular response rate is a function of the refractory properties and concealed conduction of the atrioventricular node, autonomic tone, and the presence of accessory pathways where applicable.</p>`,n:"Next, we will review common precipitants of post-operative atrial fibrillation. An understanding of these precipitants is essential to safe practice."},
+    {k:"check",q:"The ventricular rhythm in atrial fibrillation is best described as:",opts:["Regular","Irregularly irregular","Regularly irregular","Bigeminal"],c:1},
+    {k:"content",h:"Recognition on the Monitor",body:`<p>Atrial fibrillation is recognized on the cardiac monitor by the absence of consistent organized P waves, an undulating fibrillatory baseline, and an irregularly irregular ventricular response. The QRS complex is typically narrow in the absence of aberrant conduction.</p><p>The clinician should distinguish atrial fibrillation from other irregular supraventricular rhythms, including atrial flutter with variable conduction and multifocal atrial tachycardia, each of which carries distinct electrocardiographic features.</p>`,n:"In this section, we will discuss recognition of atrial fibrillation on the cardiac monitor and its differentiation from similar rhythms."},
+    {k:"content",h:"Rate Control versus Rhythm Control",body:`<p>Management is broadly divided into strategies directed at controlling the ventricular rate and strategies directed at restoring and maintaining sinus rhythm. The selection depends upon hemodynamic stability, the duration of the arrhythmia, reversible precipitants, and institutional protocol.</p><table class="tbl"><tr><th>Strategy</th><th>Goal</th><th>Agents (class)</th></tr><tr><td>Rate control</td><td>Control ventricular response</td><td>Beta-blockers, non-DHP calcium channel blockers, amiodarone</td></tr><tr><td>Rhythm control</td><td>Restore / maintain sinus rhythm</td><td>Antiarrhythmic agents; synchronized cardioversion</td></tr></table>`,n:"We will now differentiate rate-control from rhythm-control strategies and the factors that inform their selection."},
+    {k:"check",q:"Rate-control strategies are directed primarily at:",opts:["Restoring sinus rhythm","Controlling the ventricular response","Eliminating the need for anticoagulation","Preventing all recurrence"],c:1},
+    {k:"content",h:"Pharmacologic Management (1 of 2)",body:`<p>Several classes of agent are employed for rate control, selected according to the strategy, the patient’s ventricular function, and institutional protocol:</p><ol><li>Beta-adrenergic antagonists — rate control in preserved ventricular function.</li><li>Non-dihydropyridine calcium channel antagonists — rate control; caution in reduced ejection fraction owing to negative inotropy.</li><li>Amiodarone — rate and/or rhythm control, frequently referenced in reduced ejection fraction.</li></ol>`,n:"This section reviews the pharmacologic agents used for rate control. Specific doses are governed by institutional protocol and provider order."},
+    {k:"content",h:"Pharmacologic Management (2 of 2): Reduced Ejection Fraction",body:`<p>In the patient with reduced left ventricular systolic function, negative inotropic agents — including the non-dihydropyridine calcium channel blockers — may further depress cardiac output and should be used with particular caution. Amiodarone is frequently preferred for rate control in this population, subject to institutional protocol and the patient’s comorbidities.</p>`,n:"Particular attention must be paid to the patient with reduced ejection fraction, in whom agent selection differs."},
+    {k:"check",q:"In reduced ejection fraction, which class warrants particular caution?",opts:["Amiodarone","Non-dihydropyridine calcium channel blockers","Magnesium","Potassium"],c:1},
+    {k:"content",h:"Electrolyte Management",body:`<p>Correction of magnesium and potassium is an important adjunctive measure, as deficiencies of these electrolytes are associated with the initiation and perpetuation of atrial arrhythmias in the post-operative period. Repletion should be undertaken according to institutional targets and reassessed.</p>`,n:"We will now discuss the role of magnesium and potassium repletion in the management of atrial fibrillation."},
+    {k:"content",h:"Anticoagulation",body:`<p>Anticoagulation decisions require the balancing of thromboembolic risk against the bleeding risk conferred by recent surgery, and are made in conjunction with the surgical and cardiology services. The post-operative window is a distinct clinical situation and should not be approached by reflex.</p>`,n:"This section addresses anticoagulation considerations in the post-operative patient."},
+    {k:"content",h:"Synchronized Cardioversion",body:`<p>Synchronized cardioversion is indicated in the patient who is hemodynamically unstable as a consequence of the arrhythmia. Synchronization to the R wave is required to avoid the induction of a ventricular arrhythmia. Sedation, airway management, and appropriate monitoring are prerequisites, and synchronization should be reconfirmed between attempts.</p>`,n:"We will review the indications for, and the safe conduct of, synchronized cardioversion."},
+    {k:"check",q:"Synchronized cardioversion is indicated when:",opts:["The ventricular rate exceeds 100","The patient is hemodynamically unstable due to the arrhythmia","Any post-operative AF is present","The patient requests it"],c:1},
+    {k:"content",h:"Documentation and Escalation",body:`<p>The arrhythmia, the interventions undertaken, and the patient’s response should be documented in accordance with institutional policy. Escalation should proceed promptly where instability develops, where the ventricular rate cannot be controlled, or where new ischemia or hemodynamic decline is observed.</p>`,n:"Finally, we will review documentation and escalation requirements in accordance with institutional policy."},
+    {k:"glossary"},{k:"refs"},{k:"test",which:"post"},{k:"done"}
+  ];
+  let i=0,timer=null,preScore=null,postScore=null;
+  const t0=Date.now();
+  function objList(){return `<ol>
+      <li>Recognize atrial fibrillation with rapid ventricular response on the cardiac monitor.</li>
+      <li>Explain the pathophysiology of atrial fibrillation, including ectopic atrial foci and atrioventricular nodal conduction.</li>
+      <li>Identify common precipitants of post-operative atrial fibrillation.</li>
+      <li>Differentiate rate-control from rhythm-control strategies.</li>
+      <li>Select an appropriate pharmacologic rate-control agent.</li>
+      <li>Describe magnesium and potassium repletion in the management of atrial fibrillation.</li>
+      <li>Recognize indications for synchronized cardioversion in the unstable patient.</li>
+      <li>Document and escalate appropriately according to institutional policy.</li></ol>`;}
+  function renderScreen(s){
+    if(s.k==="cover")return `<div style="padding-top:18px">${heart}<h1>ATRIAL FIBRILLATION WITH RVR</h1><p class="sub">Cardiac Dysrhythmia Education Series &nbsp;·&nbsp; Module 7 of 12</p><p style="text-align:center">Estimated time to complete: <b>12 minutes</b></p><p style="text-align:center;color:#777;font-size:11px;margin-top:20px">Please do not close your browser window — your progress is being recorded.<br>Click <b>Next ▸</b> to begin.</p></div>`;
+    if(s.k==="info")return `<h2>Before You Begin</h2><p>This module must be completed in a single sitting. Use the <b>Next</b> and <b>Prev</b> buttons to navigate; do not use your browser’s back button, as your progress may not be recorded. Each content screen must be displayed for a minimum dwell time before you may advance, and each knowledge check must be answered correctly to continue.</p><p>A pre-test and a post-test are included. Your completion will be recorded in the Learning Management System upon reaching the final screen.</p>${narr("Welcome to the module. Please read the navigation instructions carefully before beginning. This module should take approximately twelve minutes to complete.")}`;
+    if(s.k==="obj")return `<h2>Learning Objectives</h2><p>Upon successful completion of this module, the learner will be able to:</p>${objList()}<p style="color:#888;font-size:10.5px">(Eight objectives · one module · assigned in March · completion tracked.)</p>`;
+    if(s.k==="content")return `<h2>${s.h}</h2>${s.body}${narr(s.n)}`;
+    if(s.k==="check")return `<h2>Knowledge Check</h2><p style="color:#555">You must answer correctly to continue.</p><p style="font-weight:bold;color:#1f3b5c;font-family:Arial,Helvetica,sans-serif;font-size:12.5px;margin-top:10px">${s.q}</p><div class="bmquiz" id="bmq">`+s.opts.map((o,k)=>`<label data-i="${k}">${String.fromCharCode(65+k)}. ${o}</label>`).join("")+`</div><div class="bmfb" id="bmfb"></div>`;
+    if(s.k==="test")return `<h2>${s.which==="pre"?"Pre-Test":"Post-Test"}</h2><p>Answer all ${testQs.length} questions. ${s.which==="pre"?"Your baseline will be recorded.":"Your score will be recorded upon completion."}</p>`+testQs.map((t,qi)=>`<div class="bmtestq"><b>${qi+1}. ${t.q}</b><div class="bmquiz">`+t.opts.map((o,oi)=>`<label data-qi="${qi}" data-oi="${oi}">${String.fromCharCode(65+oi)}. ${o}</label>`).join("")+`</div></div>`).join("");
+    if(s.k==="glossary")return `<h2>Glossary</h2><dl class="bmgloss"><dt>Atrial fibrillation (AF)</dt><dd>A supraventricular tachyarrhythmia with uncoordinated atrial activation.</dd><dt>Rapid ventricular response (RVR)</dt><dd>A rapid ventricular rate resulting from conduction of atrial fibrillation through the AV node.</dd><dt>Atrioventricular (AV) node</dt><dd>The structure governing conduction of atrial impulses to the ventricles.</dd><dt>Ectopic focus</dt><dd>An abnormal site of electrical impulse formation outside the sinoatrial node.</dd><dt>Negative inotropy</dt><dd>A reduction in the force of myocardial contraction.</dd><dt>Synchronized cardioversion</dt><dd>Delivery of a shock timed to the R wave to restore an organized rhythm.</dd></dl>`;
+    if(s.k==="refs")return `<h2>References</h2><ol class="bmrefs"><li>Joglar JA, et al. 2023 ACC/AHA/ACCP/HRS Guideline for the Diagnosis and Management of Atrial Fibrillation. <i>Circulation.</i> 2024.</li><li>American Heart Association. 2025 Guidelines for CPR and Emergency Cardiovascular Care, Part 9: Adult Advanced Life Support.</li><li>The Society of Thoracic Surgeons. Expert Consensus for the Resuscitation of Patients Who Arrest After Cardiac Surgery. <i>Ann Thorac Surg.</i> 2017.</li><li>Institutional policy and provider order govern all pharmacologic and procedural specifics.</li></ol>`;
+    if(s.k==="done")return `<div class="bmdone"><div class="chk">✔</div><h1 style="font-size:19px;margin-top:8px">Module Complete</h1><p style="text-align:center">Congratulations! You have completed <b>Module 7 — Atrial Fibrillation with RVR</b>.</p><p style="text-align:center">Completion status: <b>100%</b></p><p style="text-align:center">Pre-test: <b>${preScore==null?"—":preScore+"/"+testQs.length}</b> &nbsp;·&nbsp; Post-test: <b>${postScore==null?"—":postScore+"/"+testQs.length}</b></p><p style="text-align:center;color:#777;font-size:11px;margin-top:14px">This result has been recorded in the Learning Management System.<br>You may now close this window.</p></div>`;
+    return "";
+  }
+  dbody.innerHTML=`<div class="bmlabel"><b>THE OLD WAY · the anti-pattern</b><span>one “12-minute” monolith · 8 objectives · pre/post-test · dwell-gated · assigned once</span></div>
+    <div class="bmframe">
+      <div class="bmchrome"><span>Clinical Learning Center — Course Player</span><span class="wx">⏱ <span id="bmclock">00:00</span> &nbsp;·&nbsp; ● connected</span></div>
+      <div class="bmbody" id="bmbody"></div>
+      <div class="bmfooter"><button class="bmbtn" id="bmprev">◂ Prev</button><div style="display:flex;align-items:center;gap:8px"><span id="bmslide"></span> <span class="bmbar"><i id="bmbar"></i></span></div><button class="bmbtn" id="bmnext">Next ▸</button></div>
+    </div>
+    <div class="callout bad" style="margin-top:14px"><div class="ml">Why this is the “before”</div><p>Eight objectives in one container, a pre-test and post-test bolted on, a dwell timer that makes you wait, knowledge checks that block you, and a completion bar mistaken for competence — assigned once in March for a patient who converts in July. It isn’t microlearning; it’s a lecture in a smaller container. Every unit in the showcase is a piece this monolith should have been broken into.</p></div>`;
+  const body=dbody.querySelector("#bmbody"),prev=dbody.querySelector("#bmprev"),next=dbody.querySelector("#bmnext"),slide=dbody.querySelector("#bmslide"),bar=dbody.querySelector("#bmbar");
+  const clk=setInterval(()=>{const c=document.getElementById("bmclock");if(!c){clearInterval(clk);return;}const e=Math.floor((Date.now()-t0)/1000);c.textContent=String(Math.floor(e/60)).padStart(2,"0")+":"+String(e%60).padStart(2,"0");},1000);
+  function startDwell(){let r=DWELL;next.disabled=true;next.textContent=`Next ▸ (${r})`;timer=setInterval(()=>{r--;if(r<=0){clearInterval(timer);next.textContent="Next ▸";next.disabled=false;}else next.textContent=`Next ▸ (${r})`;},1000);}
+  function wireCheck(s){const q=body.querySelector("#bmq"),fb=body.querySelector("#bmfb");q.querySelectorAll("[data-i]").forEach(l=>l.onclick=()=>{q.querySelectorAll("[data-i]").forEach(x=>x.classList.remove("sel","ok","no"));l.classList.add("sel");if(+l.dataset.i===s.c){l.classList.add("ok");fb.innerHTML='<span style="color:#2e7d32">✔ Correct. Click Next to continue.</span>';next.disabled=false;}else{l.classList.add("no");fb.innerHTML='<span style="color:#b3261e">✘ Incorrect. Review the material and try again.</span>';next.disabled=true;}});}
+  function wireTest(s){const ans=new Array(testQs.length).fill(-1);body.querySelectorAll("[data-qi]").forEach(l=>l.onclick=()=>{const qi=+l.dataset.qi,oi=+l.dataset.oi;ans[qi]=oi;body.querySelectorAll('[data-qi="'+qi+'"]').forEach(x=>x.classList.toggle("sel",x===l));if(ans.every(a=>a>=0)){const sc=ans.reduce((n,a,k)=>n+(a===testQs[k].c?1:0),0);if(s.which==="pre")preScore=sc;else postScore=sc;next.disabled=false;}});}
+  function draw(){
+    clearInterval(timer);
+    const s=screens[i];
+    body.innerHTML=renderScreen(s);
+    slide.textContent=`Slide ${i+1} of ${screens.length}`;
+    bar.style.width=Math.round((i+1)/screens.length*100)+"%";
+    prev.disabled=i===0;
+    const last=i===screens.length-1;
+    next.textContent="Next ▸";
+    if(last)next.disabled=true;
+    else if(s.k==="content")startDwell();
+    else if(s.k==="check"){next.disabled=true;wireCheck(s);}
+    else if(s.k==="test"){next.disabled=true;wireTest(s);}
+    else next.disabled=false;
+  }
+  prev.onclick=()=>{if(i>0){i--;draw();window.scrollTo(0,0);}};
+  next.onclick=()=>{if(i<screens.length-1&&!next.disabled){i++;draw();window.scrollTo(0,0);}};
+  hub.style.display="none";detail.classList.add("on");window.scrollTo(0,0);
+  try{history.pushState({bad:1},"",location.pathname);}catch(e){}
+  draw();
+}
+
+/* ---------- router ---------- */
+const hub=document.getElementById("hub"),detail=document.getElementById("detail"),dbody=document.getElementById("detailBody");
+function openUnit(id){
+  if(STAGEDEF[id]){openStaged(id);return;}
+  const u=UNITS[id];const r=RENDER[u.type](u);
+  dbody.innerHTML=r.html;r.init&&r.init(dbody);
+  hub.style.display="none";detail.classList.add("on");window.scrollTo(0,0);
+  try{history.pushState({id},"",location.pathname);}catch(e){}
+}
+function closeUnit(){detail.classList.remove("on");hub.style.display="";window.scrollTo(0,0);}
+document.getElementById("back").onclick=closeUnit;
+window.addEventListener("popstate",closeUnit);
+document.addEventListener("click",e=>{const b=e.target.closest("[data-unit]");if(b)openUnit(b.dataset.unit);const g=e.target.closest("[data-bad]");if(g)openBadModule();});
+
+fillGallery();flashDemo();
+</script>
+</body>
+</html>
