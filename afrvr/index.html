@@ -213,6 +213,13 @@ section .sub{color:var(--slate);font-size:14.5px;margin-top:8px;max-width:66ch}
 .cluster.lit .cc{color:var(--primary)}
 .sibs{display:grid;gap:12px}
 .sib{border:1px solid var(--hairline);border-radius:var(--r);border-left:4px solid var(--rule);padding:14px 16px}
+.deploy3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.deploy3 .sib{display:flex;flex-direction:column}
+.deploy3 .sib .lk{margin-top:auto;align-self:flex-start}
+.deploy3 .sib p{margin-bottom:12px}
+.sib.here{border-color:var(--ink)}
+.sib.cur .st{color:var(--dim)}
+@media (max-width:820px){.deploy3{grid-template-columns:1fr}}
 .sib.real{border-left-color:var(--primary);background:var(--t-good)}
 .sib .st{font-weight:700;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--dim)}
 .sib.real .st{color:var(--primary)}
@@ -382,8 +389,8 @@ footer.ft .r{text-align:right}
       </div>
       <div class="step red">
         <div class="ix">vFinal · THE SYSTEM</div>
-        <h3>A cluster in a library</h3>
-        <p>The goal: these units sit as one AF cluster in a library, with shared retrieval, cross-links, and a prevention sibling. That sibling, <b>RN-PAF-03</b>, is built and live.</p>
+        <h3>A series, deployed on purpose</h3>
+        <p>The ten units run as a spaced series: the sequence is the design. It’s one of three ways to deploy microlearning, next to a standalone just-in-time unit (<b>RN-PAF-03</b>) and a curriculum (the ECG Element Library).</p>
         <span class="chip">+ simulation + job aid</span>
       </div>
     </div>
@@ -448,30 +455,25 @@ footer.ft .r{text-align:right}
   <!-- SYSTEM -->
   <section style="border-bottom:none">
     <p class="eyebrow t">Integrate into a system</p>
-    <h2>A pile of ten units is still orphans</h2>
-    <p class="sub">The system is the library + the schedule + a shared retrieval bank + cross-links. Here’s how the AF/RVR series would sit in one. Its prevention sibling is built and live.</p>
-    <div class="sysmap">
-      <div class="libmap">
-        <div class="ml">How it would fit · illustrative library map</div>
-        <div class="cluster"><span class="cn">Sinus &amp; conduction</span></div>
-        <div class="cluster lit"><span class="cn">Atrial fibrillation / RVR</span><span class="cc">this series · 10 units</span></div>
-        <div class="cluster"><span class="cn">Atrial flutter &amp; SVT</span></div>
-        <div class="cluster"><span class="cn">Ventricular rhythms</span></div>
-        <div class="cluster"><span class="cn">Blocks &amp; pacing</span></div>
-        <p class="note" style="margin-top:12px">Shared retrieval bank — the AF-recognition item would live in a rhythm-recognition bank and resurface across clusters. Cross-links: recognition ↔ broader rhythm ID; instability ↔ general deterioration / escalation.</p>
+    <h2>Same discipline, three deployments</h2>
+    <p class="sub">A pile of ten units is still orphans. What makes it a system is how it’s deployed, and that’s a decision, like the form. This series is one deployment. The other two are built and live.</p>
+    <div class="deploy3">
+      <div class="sib real">
+        <div class="st">Just-in-time unit · live</div>
+        <h3>RN-PAF-03 — Preventing Post-op AF</h3>
+        <p>One objective, about five minutes, opened at the moment of need: the start of a POD 0–1 CVICU shift. Stands alone; nothing before or after it. Checked against the full-text STS 2026, ESC 2024 and ACC/AHA 2023 guidelines.</p>
+        <a class="lk" id="rnpaf-link" href="https://scottbrickner.github.io/poaf/" target="_blank" rel="noopener">Open the just-in-time unit →</a>
       </div>
-      <div class="sibs">
-        <div class="sib">
-          <div class="st">This series · management</div>
-          <h3>Managing new AF with RVR</h3>
-          <p>Ten units — recognize, act, escalate — plus the retrieval schedule and the sim anchor. The hypothetical built properly.</p>
-        </div>
-        <div class="sib real">
-          <div class="st">The real sibling · prevention · live</div>
-          <h3>RN-PAF-03 — Preventing Post-op AF</h3>
-          <p>Built and live as its own example: Why it matters → Sort → Watch → Decide → Recall → TL;DR, with confidence-rated retrieval. Same discipline, real content, checked against the full-text STS 2026, ESC 2024 and ACC/AHA 2023 guidelines.</p>
-          <a class="lk" id="rnpaf-link" href="https://scottbrickner.github.io/poaf/" target="_blank" rel="noopener">Open the POAF example →</a>
-        </div>
+      <div class="sib here">
+        <div class="st">Spaced series · this page</div>
+        <h3>Managing new AF with RVR</h3>
+        <p>Ten single-objective units (recognize, act, escalate), spaced over six weeks with retrieval that targets confident misses, plus a simulation anchor for the reasoning microlearning can’t carry. The sequence is the design.</p>
+      </div>
+      <div class="sib cur">
+        <div class="st">Curriculum · any order · live</div>
+        <h3>ECG Element Library</h3>
+        <p>Fourteen elements across four spines (identify, quick ID, intervene, escalate). One competency domain, covered end to end, taken in any order: nothing is a prerequisite for anything else.</p>
+        <a class="lk" href="https://scottbrickner.github.io/ecg-elements-rn/" target="_blank" rel="noopener">Open the curriculum →</a>
       </div>
     </div>
     <div style="margin-top:20px;background:var(--t-good);border:1px solid var(--primary);border-radius:var(--r);padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
