@@ -14,8 +14,12 @@ bundled or compiled — what is in the repo is what is served.
 ├── index.html           ← the landing page people see first
 ├── credits.html         ← third-party attribution
 ├── LICENSE
-└── ecg-elements-rn/
-    └── index.html       ← ECG Element Library (RN), unbranded build
+├── ecg-elements-rn/
+│   └── index.html       ← ECG Element Library (RN), unbranded build
+├── afrvr/
+│   └── index.html       ← Microlearning example: AF with RVR
+└── poaf/
+    └── index.html       ← Microlearning example: preventing post-op AF (RN-PAF-03)
 ```
 
 ## Adding a new artifact
